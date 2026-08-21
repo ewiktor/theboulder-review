@@ -1,0 +1,6 @@
+# Static site, no build step. The one moving part is the function that
+# keeps feedback and idea copy shared between everyone on the link.
+[build]
+  publish = "."
+  command = ""
+  functions = "netlify/functions"

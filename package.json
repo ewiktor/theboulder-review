@@ -1,0 +1,8 @@
+{
+  "name": "draper-review",
+  "private": true,
+  "description": "DRAPER review board — static site plus one Netlify function for shared feedback.",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

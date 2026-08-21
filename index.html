@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DRAPER — Review</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="config.js"></script>
+
+  <!-- The active project. Defaults to the first entry in config.projects;
+       studio mode can switch brands with ?project=<folder>. -->
+  <script>
+    (() => {
+      const list = window.DRAPER_CONFIG.projects || [];
+      const want = new URLSearchParams(location.search).get("project");
+      const pick = list.find((p) => p.folder === want) || list[0];
+      document.write(`<script src="projects/${pick.folder}/project.js"><\/script>`);
+    })();
+  </script>
+
+  <script src="store.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

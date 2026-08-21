@@ -1,0 +1,448 @@
+/* ============================================================
+   DRAPER Review. Tokens sampled from DRAPER PRODUCT.
+   Zero radius. Frames are the interface; chrome stays out of the way.
+   ============================================================ */
+:root {
+  --bg:            #FFFFFF;
+  --fill:          #F4F4F4;
+  --line:          #DADADA;
+  --line-soft:     #EFEFEF;
+  --ink:           #000000;
+  --ink-secondary: #858A99;
+  --ink-muted:     #C2C4CC;
+  --blue:          #155DFC;
+  --green:         #009966;
+
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --sidebar-w: 216px;
+}
+
+* { box-sizing: border-box; border-radius: 0 !important; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+button, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: none; padding: 0; }
+
+.label {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-secondary);
+}
+.quiet { font-size: 13px; color: var(--ink-secondary); padding: 6px 8px; }
+.quiet:hover { color: var(--ink); background: var(--fill); }
+.quiet:disabled { color: var(--ink-muted); cursor: default; background: none; }
+
+.dot { width: 6px; height: 6px; display: inline-block; background: var(--blue); }
+.dot--blue { background: var(--blue); }
+
+.field {
+  width: 100%; border: 1px solid var(--line); background: var(--bg);
+  padding: 11px 12px; font-size: 14px; line-height: 1.5;
+  resize: vertical; outline: none;
+}
+.field:focus { border-color: var(--ink); }
+.field::placeholder { color: var(--ink-muted); }
+
+.label--row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.editbtn {
+  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-muted); padding: 2px 4px;
+}
+.editbtn:hover { color: var(--ink); background: var(--fill); }
+.editbtn--on { color: var(--ink); }
+.fb-label { margin: 22px 0 8px; }
+.field--idea { margin-top: 8px; }
+.idea-empty { color: var(--ink-muted); }
+/* one save confirmation for the whole board, above everything */
+.toast {
+  position: fixed; z-index: 90;
+  left: 50%; bottom: 28px; transform: translate(-50%, 8px);
+  padding: 9px 14px;
+  background: var(--ink); color: #fff;
+  font-size: 13px; white-space: nowrap;
+  opacity: 0; pointer-events: none;
+  transition: opacity 160ms, transform 160ms;
+}
+.toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- shell: sidebar + content, nothing else ---------- */
+.app { display: flex; height: 100%; }
+
+.sidebar {
+  width: var(--sidebar-w); flex: 0 0 var(--sidebar-w);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+  padding: 24px 0 16px;
+}
+/* Head of the nav, matching the product: logo row with a collapse
+   control, then the brand as a filled box. */
+.sidebar__head { padding: 0 12px 18px; }
+.sidebar__logorow {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 0 4px 14px;
+}
+.sidebar__logo { display: block; width: 40px; height: auto; }
+.navtoggle {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px;
+  color: var(--ink-secondary);
+}
+.navtoggle:hover { color: var(--ink); }
+
+.brandbox {
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 10px;
+  background: var(--bg); border: 1px solid var(--line);
+}
+.brandbox__name {
+  flex: 1; min-width: 0;
+  font-size: 13px; font-weight: 500; color: var(--ink);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.brandbox__chev { flex: 0 0 auto; color: var(--ink-secondary); }
+.brandbox--switch:hover { border-color: var(--ink); }
+.brandbox--switch:hover .brandbox__chev { color: var(--ink); }
+/* the real control, laid over the box so the whole thing is clickable */
+.brandbox__select {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0; cursor: pointer;
+  font: inherit; border: none; appearance: none;
+}
+
+/* collapsed: a narrow strip with the mark and the way back */
+.nav-collapsed .sidebar { width: 56px; flex: 0 0 56px; overflow: visible; }
+.nav-collapsed .sidebar__head { padding: 0 8px 12px; }
+.nav-collapsed .sidebar__logorow { flex-direction: column; gap: 10px; padding: 0 0 12px; }
+.nav-collapsed .sidebar__logo { width: 30px; }
+.nav-collapsed .navtoggle { transform: scaleX(-1); }
+.nav-collapsed .brandbox,
+.nav-collapsed .nav,
+.nav-collapsed .sidebar__foot { display: none; }
+
+.nav { display: flex; flex-direction: column; flex: 1; }
+.nav__lane { margin-top: 14px; }
+.nav__row {
+  width: calc(100% - 24px); margin: 0 12px;
+  text-align: left;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 6px 10px;
+  font-size: 13px; color: var(--ink-secondary);
+}
+.nav__row:hover { background: var(--fill); color: var(--ink); }
+.nav__row--lane { color: var(--ink); font-weight: 500; }
+.nav__row--group { padding-left: 22px; }
+.nav__row.is-active { background: var(--fill); color: var(--ink); }
+.nav__count { font-size: 12px; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.nav__name { display: inline-flex; align-items: center; gap: 7px; min-width: 0; }
+.dotslot:empty { display: none; }
+
+.sidebar__foot { padding: 16px 20px 0; }
+
+/* ---------- main ---------- */
+.main { flex: 1; overflow-y: auto; padding: 24px 24px 64px 12px; }
+
+/* Styled to match the frame-detail panel, on the right of the grid. */
+.grouppanel {
+  width: 360px; flex: 0 0 360px;
+  overflow-y: auto;
+  padding: 28px 24px 48px 24px;
+}
+.tabs { display: none; }
+.mobilefoot { display: none; }
+.grouppanel__close { display: none; }
+.panelscrim { display: none; }
+.grouphead { display: none; }
+.grouppanel__title { font-size: 19px; font-weight: 500; margin: 0 0 18px; letter-spacing: -0.01em; }
+.grouppanel__idea { margin: 6px 0 22px; font-size: 14px; line-height: 1.55; }
+
+.grid { display: flex; gap: 14px; align-items: flex-start; }
+.grid__col { flex: 1; min-width: 0; }
+.card {
+  position: relative;
+  display: block; width: 100%;
+  break-inside: avoid; margin: 0 0 14px;
+}
+.ph { width: 100%; background: var(--fill); }
+.ph-img { width: 100%; display: block; object-fit: cover; }
+.card:hover .ph, .card:hover .ph-img { outline: 1px solid rgba(0,0,0,0.35); outline-offset: -1px; }
+.card__dot { position: absolute; top: 8px; right: 8px; }
+.card__dot:empty { display: none; }
+
+/* ---------- detail overlay ---------- */
+.detail {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  display: grid; grid-template-columns: 1fr 400px;
+}
+.detail__panel { background: var(--bg); }
+.detail__close {
+  display: block;
+  width: 32px; height: 32px; font-size: 14px; line-height: 1;
+  color: var(--ink-secondary);
+  margin: 0 0 24px -6px;
+}
+.detail__close:hover { color: var(--ink); background: var(--fill); }
+
+.detail__stage {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px; padding: 40px; min-width: 0;
+}
+.detail__media { max-width: 100%; display: flex; justify-content: center; }
+.ph--stage { height: 78vh; width: auto; max-width: 100%; }
+img.ph--stage, video.ph--stage { height: 78vh; width: auto; object-fit: contain; }
+
+/* switch the stage between a frame's motion and still versions */
+.stageswap { display: flex; justify-content: center; gap: 4px; flex: 0 0 auto; }
+.stageswap__btn {
+  padding: 5px 12px; font-size: 12px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink-secondary);
+}
+.stageswap__btn:hover { color: var(--ink); border-color: var(--ink); }
+.stageswap__btn.is-on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.detail__pager { display: flex; align-items: center; gap: 12px; }
+.detail__counter { font-size: 12px; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+
+.detail__panel { overflow-y: auto; padding: 20px 24px 48px 28px; }
+.detail__title { font-size: 19px; font-weight: 500; margin: 0 0 18px; letter-spacing: -0.01em; }
+.detail__idea { margin: 6px 0 22px; font-size: 14px; line-height: 1.55; }
+
+
+
+
+/* ---------- shared-storage UI ---------- */
+.sidebar__foot { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.quiet.is-on { color: var(--ink); background: var(--fill); }
+.quiet--tiny { font-size: 11px; color: var(--ink-muted); }
+
+/* feedback summary */
+.sum { max-width: 900px; padding-right: 24px; }
+.sum__title { font-size: 26px; font-weight: 500; letter-spacing: -0.01em; }
+.sum__sub { font-size: 13px; color: var(--ink-secondary); margin: 4px 0 28px; }
+.sum__group { margin-bottom: 30px; }
+.sum__head {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-secondary); padding-bottom: 8px; border-bottom: 1px solid var(--ink);
+}
+.sum__row { display: flex; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--line-soft); }
+.sum__row--group .sum__what { font-weight: 500; color: var(--ink); }
+.sum__what { flex: 0 0 190px; font-size: 13px; color: var(--ink-secondary); }
+.sum__body { flex: 1; font-size: 14px; line-height: 1.55; }
+.linkish { font-size: 13px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.linkish:hover { color: var(--blue); }
+
+
+/* ============================================================
+   RESPONSIVE
+   Desktop: nav + grid + panel side by side.
+   Tablet/phone: nav becomes a drawer, panels stack, frame view
+   goes vertical. Touch targets grow, inputs hit 16px so iOS
+   does not zoom the page when a field is focused.
+   ============================================================ */
+
+/* hidden on desktop */
+.mobilebar { display: none; }
+.navscrim { display: none; }
+body.is-locked { overflow: hidden; }
+
+@media (max-width: 1200px) {
+  .detail { grid-template-columns: 1fr 340px; }
+  .grouppanel { width: 300px; flex: 0 0 300px; }
+}
+
+@media (max-width: 900px) {
+  /* --- top bar --- */
+  .mobilebar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    position: sticky; top: 0; z-index: 30;
+    padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+    background: var(--bg); border-bottom: 1px solid var(--line);
+  }
+  .mobilebar__logo { width: 34px; height: auto; display: block; }
+
+  /* current view, as information rather than a control */
+  .mobilebar__ctx {
+    margin-left: auto; display: flex; align-items: baseline; gap: 7px;
+    font-size: 13px; color: var(--ink-secondary);
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .mobilebar__count { font-size: 12px; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+
+  /* --- app becomes a column --- */
+  .app { flex-direction: column; height: auto; min-height: 100%; }
+
+  /* --- nav is replaced by visible filter tabs --- */
+  .sidebar { display: none; }
+  .navscrim { display: none; }
+  .menubtn { display: none; }
+
+  .tabs {
+    display: block;
+    position: sticky; top: 0; z-index: 28;
+    background: var(--bg); border-bottom: 1px solid var(--line);
+  }
+  .tabs__row {
+    display: flex; gap: 6px;
+    padding: 8px 12px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs__row::-webkit-scrollbar { display: none; }
+  .tabs__row--sub { padding-top: 0; padding-bottom: 10px; }
+  .tabs__row--sub .chip { font-size: 13px; padding: 6px 11px; }
+
+  .chip {
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 13px; min-height: 34px;
+    border: 1px solid var(--line);
+    font-size: 14px; color: var(--ink-secondary);
+    white-space: nowrap;
+  }
+  .chip:active { background: var(--fill); }
+  .chip.is-active {
+    background: var(--ink); border-color: var(--ink); color: #fff;
+  }
+  .chip__n { font-size: 11px; opacity: 0.55; font-variant-numeric: tabular-nums; }
+
+  /* utility controls at the foot of the page, visible */
+  .mobilefoot {
+    display: block;
+    padding: 22px 16px calc(28px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+  }
+  .mobilefoot__acts { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+
+  .quiet { padding: 10px 8px; font-size: 14px; }
+
+  /* --- content --- */
+  .main { padding: 8px 12px calc(40px + env(safe-area-inset-bottom)); overflow: visible; }
+  .grid { gap: 10px; }
+  .card { margin-bottom: 10px; }
+
+  /* head of the open group: its name, and the way into the feedback
+     sheet — directly under the tabs, where the eye lands after choosing */
+  .grouphead {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 16px 12px;
+  }
+  .grouphead__name {
+    margin: 0; min-width: 0;
+    font-size: 17px; font-weight: 500; letter-spacing: -0.01em;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .grouphead__fb {
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; gap: 7px;
+    min-height: 34px; padding: 7px 13px;
+    border: 1px solid var(--line);
+    font-size: 13px; white-space: nowrap;
+  }
+  .grouphead__fb:active { background: var(--fill); }
+
+  .grouppanel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 45;
+    width: 88vw; max-width: 400px; flex: none;
+    background: var(--bg); border-left: 1px solid var(--line);
+    padding: calc(56px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));
+    overflow-y: auto; overscroll-behavior: contain;
+    transform: translateX(102%);
+    transition: transform 240ms cubic-bezier(.2,.7,.2,1);
+  }
+  .panel-open .grouppanel { transform: none; }
+  .grouppanel__title { font-size: 22px; margin-bottom: 14px; }
+  .grouppanel__close {
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; top: calc(12px + env(safe-area-inset-top)); right: 14px;
+    width: 40px; height: 40px; color: var(--ink);
+    border: 1px solid var(--line); background: var(--bg);
+  }
+  .panelscrim {
+    display: block; position: fixed; inset: 0; z-index: 44;
+    background: rgba(0,0,0,0.28);
+    opacity: 0; pointer-events: none; transition: opacity 200ms;
+  }
+  .panel-open .panelscrim { opacity: 1; pointer-events: auto; }
+
+  /* --- frame detail goes vertical ---
+     Two rows. The top one — the blurred ground the frame sits on, with
+     Prev/Next under it — is a fixed height, so it is identical whether
+     the frame is a tall social post or a wide web screen and the pager
+     never moves between frames. The info panel takes the rest and
+     scrolls inside itself; the overlay itself never scrolls. */
+  .detail {
+    grid-template-columns: 1fr;
+    grid-template-rows: 68vh minmax(0, 1fr);
+    overflow: hidden;
+  }
+  .detail__stage {
+    min-height: 0;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: calc(52px + env(safe-area-inset-top)) 16px 10px;
+  }
+  .detail__media { flex: 1; min-height: 0; align-items: center; width: 100%; }
+  img.ph--stage, video.ph--stage {
+    height: auto; width: auto;
+    max-height: 100%; max-width: 100%;
+    object-fit: contain;
+  }
+  /* placeholder frames have no intrinsic size — drive them off the height */
+  div.ph--stage { height: 100%; width: auto; max-width: 100%; }
+  .detail__pager {
+    flex: 0 0 auto;
+    width: 100%; justify-content: space-between; gap: 8px;
+  }
+  .detail__pager .quiet { min-width: 92px; text-align: center; padding: 10px 8px; }
+  .detail__counter { flex: 0 0 auto; }
+  .detail__panel {
+    min-height: 0;
+    padding: 18px 16px 24px;
+    overflow-y: auto; overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    border-top: 1px solid var(--line-soft);
+  }
+  .detail__close {
+    position: fixed; top: calc(8px + env(safe-area-inset-top)); right: 12px; left: auto;
+    z-index: 3; width: 40px; height: 40px;
+    background: var(--bg); border: 1px solid var(--line);
+  }
+
+  /* summary */
+  .sum__row { flex-direction: column; gap: 4px; }
+  .sum__what { flex: none; }
+}
+
+@media (max-width: 600px) {
+  .main { padding: 8px 10px calc(40px + env(safe-area-inset-bottom)); }
+  .grid { gap: 8px; }
+  .card { margin-bottom: 8px; }
+  .detail__stage { padding: calc(52px + env(safe-area-inset-top)) 10px 10px; }
+  .detail__panel { padding: 16px 14px 22px; }
+  .detail__title { font-size: 18px; }
+  .mobilebar__ctx { font-size: 12px; }
+}
+
+/* iOS zooms the whole page if an input is under 16px — never let that happen */
+@media (max-width: 900px) {
+  .field, .groupbar__field, textarea { font-size: 16px; }
+  /* match the copy beside them, so the panel reads at one size */
+  .detail__idea, .grouppanel__idea { font-size: 16px; line-height: 1.5; }
+  .toast { bottom: calc(22px + env(safe-area-inset-bottom)); font-size: 14px; }
+}
+
+/* coarse pointers: no hover outline, keep the tap feedback instead */
+@media (hover: none) {
+  .card:hover .ph, .card:hover .ph-img { outline: none; }
+  .card:active .ph, .card:active .ph-img { outline: 1px solid rgba(0,0,0,0.35); outline-offset: -1px; }
+}

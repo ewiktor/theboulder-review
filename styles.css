@@ -179,10 +179,17 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
 .card__dot:empty { display: none; }
 
 /* ---------- detail overlay ---------- */
-.detail {
-  position: fixed; inset: 0; z-index: 40;
+/* The blurred ground is its own still layer. It used to live on .detail,
+   which is also the scroller on mobile — so every scrolled frame re-blurred
+   the whole viewport, and editing on a phone crawled. Nothing moves here,
+   so it composites once. */
+.detail__scrim {
+  position: fixed; inset: 0; z-index: 39;
   background: rgba(255, 255, 255, 0.78);
   -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+}
+.detail {
+  position: fixed; inset: 0; z-index: 40;
   display: grid; grid-template-columns: 1fr 400px;
 }
 .detail__panel { background: var(--bg); }

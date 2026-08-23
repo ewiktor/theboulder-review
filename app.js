@@ -347,6 +347,7 @@
             <button class="stageswap__btn ${shown.video ? "" : "is-on"}" data-action="stage:still">Still</button>
           </div>` : "";
     return `
+      <div class="detail__scrim" data-overlay></div>
       <div class="detail" data-overlay>
         <div class="detail__bar">
           <button class="detail__close detail__close--pinned" data-action="close" aria-label="Close">✕</button>
@@ -709,12 +710,19 @@
 
   /* swipe left/right inside the detail view */
   let tx = 0, ty = 0;
+  let swipeOk = false;
   root.addEventListener("touchstart", (e) => {
     if (!openId || !e.touches[0]) return;
+    /* Selecting a word in the idea or the feedback drags horizontally too.
+       Judge by where the finger went down, not by what happens to be
+       focused — the first tap of a double-tap has not focused anything
+       yet, and paging the frame out from under a selection reads as the
+       board breaking. */
+    swipeOk = !e.target.closest(".detail__panel, textarea, button, input, select");
     tx = e.touches[0].clientX; ty = e.touches[0].clientY;
   }, { passive: true });
   root.addEventListener("touchend", (e) => {
-    if (!openId || !e.changedTouches[0]) return;
+    if (!openId || !swipeOk || !e.changedTouches[0]) return;
     if (document.activeElement && document.activeElement.tagName === "TEXTAREA") return;
     const dx = e.changedTouches[0].clientX - tx;
     const dy = e.changedTouches[0].clientY - ty;

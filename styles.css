@@ -287,9 +287,11 @@ body.is-locked { overflow: hidden; }
   .navscrim { display: none; }
   .menubtn { display: none; }
 
+  /* sticks below the top bar, not underneath it — --bar-h is measured
+     from the real bar, whose height moves with the safe-area inset */
   .tabs {
     display: block;
-    position: sticky; top: 0; z-index: 28;
+    position: sticky; top: var(--bar-h, 55px); z-index: 28;
     background: var(--bg); border-bottom: 1px solid var(--line);
   }
   .tabs__row {

@@ -437,6 +437,15 @@
     });
     if (openId) upgradeFull();
     wireVideos();
+    measureBar();
+  }
+
+  /* The filter tabs stick directly under the top bar. Its height depends on
+     the device's safe-area inset, so measure rather than guess. */
+  function measureBar() {
+    const bar = root.querySelector(".mobilebar");
+    const h = bar && bar.offsetParent !== null ? bar.getBoundingClientRect().height : 0;
+    document.documentElement.style.setProperty("--bar-h", `${Math.round(h)}px`);
   }
 
   /* Grid motion plays only while it is on screen — 26 clips all running at

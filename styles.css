@@ -186,6 +186,7 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
   display: grid; grid-template-columns: 1fr 400px;
 }
 .detail__panel { background: var(--bg); }
+.detail__bar { display: none; }
 .detail__close {
   display: block;
   width: 32px; height: 32px; font-size: 14px; line-height: 1;
@@ -375,21 +376,21 @@ body.is-locked { overflow: hidden; }
   .panel-open .panelscrim { opacity: 1; pointer-events: auto; }
 
   /* --- frame detail goes vertical ---
-     Two rows. The top one — the blurred ground the frame sits on, with
-     Prev/Next under it — is a fixed height, so it is identical whether
-     the frame is a tall social post or a wide web screen and the pager
-     never moves between frames. The info panel takes the rest and
-     scrolls inside itself; the overlay itself never scrolls. */
+     The whole overlay scrolls as one page. The blurred block holding the
+     frame and Prev/Next keeps a fixed height, so it is identical whether
+     the frame is a tall social post or a wide web screen, and the pager
+     never moves between frames — but the copy below it is reached by
+     scrolling the screen, not a panel inside it. */
   .detail {
-    grid-template-columns: 1fr;
-    grid-template-rows: 68vh minmax(0, 1fr);
-    overflow: hidden;
+    display: block;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
   .detail__stage {
-    min-height: 0;
+    height: 68vh;
     justify-content: flex-start;
     gap: 10px;
-    padding: calc(52px + env(safe-area-inset-top)) 16px 10px;
+    padding: calc(56px + env(safe-area-inset-top)) 16px 10px;
   }
   .detail__media { flex: 1; min-height: 0; align-items: center; width: 100%; }
   img.ph--stage, video.ph--stage {
@@ -406,17 +407,25 @@ body.is-locked { overflow: hidden; }
   .detail__pager .quiet { min-width: 92px; text-align: center; padding: 10px 8px; }
   .detail__counter { flex: 0 0 auto; }
   .detail__panel {
-    min-height: 0;
-    padding: 18px 16px 24px;
-    overflow-y: auto; overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+    padding: 18px 16px calc(48px + env(safe-area-inset-bottom));
+    overflow: visible;
     border-top: 1px solid var(--line-soft);
   }
-  .detail__close {
-    position: fixed; top: calc(8px + env(safe-area-inset-top)); right: 12px; left: auto;
-    z-index: 3; width: 40px; height: 40px;
+  /* The overlay is its own scroller and carries a backdrop-filter, which
+     makes it the containing block for fixed children — so a fixed close
+     button would scroll away with the frame. A zero-height sticky strip
+     at the top of the scroller holds it in place instead. */
+  .detail__bar { display: block; position: sticky; top: 0; height: 0; z-index: 6; }
+  .detail__close--pinned {
+    position: absolute; right: 12px; top: calc(10px + env(safe-area-inset-top));
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; line-height: 1; color: var(--ink);
     background: var(--bg); border: 1px solid var(--line);
+    margin: 0;
   }
+  /* the desktop one lives in the panel; only one of them shows at a time */
+  .detail__panel-in .detail__close { display: none; }
 
   /* summary */
   .sum__row { flex-direction: column; gap: 4px; }
@@ -427,8 +436,8 @@ body.is-locked { overflow: hidden; }
   .main { padding: 8px 10px calc(40px + env(safe-area-inset-bottom)); }
   .grid { gap: 8px; }
   .card { margin-bottom: 8px; }
-  .detail__stage { padding: calc(52px + env(safe-area-inset-top)) 10px 10px; }
-  .detail__panel { padding: 16px 14px 22px; }
+  .detail__stage { padding: calc(56px + env(safe-area-inset-top)) 10px 10px; }
+  .detail__panel { padding: 16px 14px calc(44px + env(safe-area-inset-bottom)); }
   .detail__title { font-size: 18px; }
   .mobilebar__ctx { font-size: 12px; }
 }

@@ -348,6 +348,9 @@
           </div>` : "";
     return `
       <div class="detail" data-overlay>
+        <div class="detail__bar">
+          <button class="detail__close detail__close--pinned" data-action="close" aria-label="Close">✕</button>
+        </div>
         <div class="detail__stage">
           <div class="detail__media">${media(shown, "ph--stage", true)}</div>
           ${toggle}

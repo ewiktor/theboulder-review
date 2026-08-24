@@ -54,6 +54,11 @@
      twin; the stage can show either without leaving the frame. */
   const twinOf = (item) => itemById(item.still || item.motion || "");
 
+  /* The two are one frame in two states, so they share one idea. The
+     still's id is where it lives — that is also where every idea written
+     so far already sits, since the still is what the board shipped with. */
+  const ideaKeyOf = (item) => (item && item.still) || (item && item.id) || "";
+
   const laneCount = (laneId) =>
     P.lanes.find((l) => l.id === laneId).groups.reduce((n, g) => n + g.items.length, 0);
 
@@ -355,6 +360,16 @@
     const { item, group, lane } = rows[idx];
     const twin = twinOf(item);
     const shown = (stageAlt && twin) ? twin : item;
+    /* opened from either card, it is the same frame under the same name */
+    const title = item.still && twin ? twin.title : item.title;
+    const ideaKey = ideaKeyOf(item);
+    /* anything written on either id before they shared a key still shows,
+       from whichever card you open, and moves onto the shared key the next
+       time someone saves */
+    const carried = [item.id, twin && twin.id]
+      .filter((k) => k && k !== ideaKey)
+      .map((k) => STORE.get("idea", k))
+      .find((v) => v) || "";
     const toggle = twin ? `
           <div class="stageswap">
             <button class="stageswap__btn ${shown.video ? "is-on" : ""}" data-action="stage:motion">Video</button>
@@ -378,8 +393,8 @@
         <aside class="detail__panel">
           <div class="detail__panel-in">
             <button class="detail__close" data-action="close" aria-label="Close">✕</button>
-            <h2 class="detail__title">${esc(item.title)}</h2>
-            ${ideaBlock(item.id, item.idea || ideaFor(groupKey(lane.id, group.id), group.idea), "detail__idea")}
+            <h2 class="detail__title">${esc(title)}</h2>
+            ${ideaBlock(ideaKey, carried || item.idea || (twin && twin.idea) || ideaFor(groupKey(lane.id, group.id), group.idea), "detail__idea")}
             <div class="label fb-label">Your feedback</div>
             <textarea class="field" rows="4" placeholder="${PROMPT}"
                       data-save="${item.id}">${esc(STORE.get("feedback", item.id) || "")}</textarea>

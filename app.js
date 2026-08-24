@@ -80,6 +80,13 @@
     return a;
   })();
 
+  /* In the Motion view a card shows the STILL it is bound to, not the clip.
+     That is the whole point of the view: confirming each motion item is
+     wired to the right frame. The tag under it names the pairing. */
+  /* A motion frame and its still are the same frame in two states, so they
+     share one "the idea" line. The still's id is the canonical key, which is
+     also where every idea written so far already lives. */
+
   const visible = () => {
     if (selection.type === "lane") return flat.filter((r) => r.lane.id === selection.laneId);
     if (selection.type === "group")
@@ -108,7 +115,14 @@
          same as the stills do. */
       const small = `${vidBase()}/thumbs/${esc(item.video)}`;
       const orig  = `${vidBase()}/${esc(item.video)}`;
-      const poster = item.poster ? ` poster="${vidBase()}/posters/${esc(item.poster)}"` : "";
+      /* The poster is the frame's own still, which always exists. That keeps a
+         motion card looking right in the grid before the clip has loaded, and
+         keeps it looking right at all if the clip is missing entirely. */
+      const twinStill = itemById(item.still || "");
+      const posterSrc = twinStill && twinStill.image
+        ? `${imgBase()}/thumbs/${esc(twinStill.image)}`
+        : (item.poster ? `${vidBase()}/posters/${esc(item.poster)}` : "");
+      const poster = posterSrc ? ` poster="${posterSrc}"` : "";
       return `<video class="ph-img ${cls}" src="${small}"${poster} muted loop playsinline
                      preload="${full ? "auto" : "none"}"${full ? ` autoplay data-full="${orig}"` : " data-autoplay"}
                      style="aspect-ratio:${item.w}/${item.h}"></video>`;

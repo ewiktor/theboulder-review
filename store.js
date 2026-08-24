@@ -148,29 +148,26 @@ const STORE = (() => {
       return push(kind, targetId, v);
     },
 
-    /* Markdown of the whole board — every note and every idea line. */
+    /* Feedback only, as flat Markdown. The idea copy is deliberately left
+       out: it is our words, not the client's, and mixing the two makes it
+       hard for a reader — or a model — to tell what is new comment and
+       what was already on the board. One frame, one line. */
     exportAsFile(project) {
-      const fb = mem.feedback || {}, id = mem.idea || {};
+      const fb = mem.feedback || {};
       const L = [`# Feedback — ${project.client}${project.round ? " · " + project.round : ""}`,
                  `_Exported ${new Date().toLocaleString()}_`,
-                 mode === "local" ? "\n> Saved on this device only." : "", ""];
+                 mode === "local" ? "\n> Saved on this device only." : ""];
+      let n = 0;
       for (const lane of project.lanes) for (const g of lane.groups) {
-        const gKey = `group:${lane.id}/${g.id}`;
-        const gNote = fb[gKey];
-        const items = g.items.filter((i) => fb[i.id] || id[i.id]);
-        if (!gNote && !items.length && !id[gKey]) continue;
-        L.push(`## ${lane.name} — ${g.name}`, "");
-        if (id[gKey]) L.push(`*The idea:* ${id[gKey]}`, "");
-        if (gNote) L.push(`**On the whole group:** ${gNote}`, "");
-        for (const it of items) {
-          L.push(`- **${it.title}**`);
-          if (id[it.id]) L.push(`  - *The idea:* ${id[it.id]}`);
-          if (fb[it.id]) L.push(`  - *Feedback:* ${fb[it.id]}`);
-        }
-        L.push("");
+        const gNote = fb[`group:${lane.id}/${g.id}`];
+        const items = g.items.filter((i) => fb[i.id]);
+        if (!gNote && !items.length) continue;
+        L.push("", `## ${lane.name} — ${g.name}`, "");
+        if (gNote) { L.push(`- **The whole group** — ${gNote}`); n++; }
+        for (const it of items) { L.push(`- **${it.title}** — ${fb[it.id]}`); n++; }
       }
-      if (!L.slice(4).join("").trim()) L.push("_Nothing written yet._");
-      const blob = new Blob([L.join("\n")], { type: "text/markdown" });
+      if (!n) L.push("", "_No feedback written yet._");
+      const blob = new Blob([L.join("\n") + "\n"], { type: "text/markdown" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = `feedback-${project.client.toLowerCase().replace(/\s+/g, "-")}.md`;

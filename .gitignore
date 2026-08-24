@@ -1,3 +1,6 @@
 .DS_Store
 node_modules/
 .netlify/
+
+# local safety copy of the frames before the round-5 image swap
+projects/*/images_backup_pre_update/

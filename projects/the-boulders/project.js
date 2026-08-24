@@ -200,7 +200,7 @@ window.DRAPER_PROJECT = {
         {
           "id": "section-banner",
           "name": "Section Banner",
-          "idea": "The bands that divide and open sections of the site.",
+          "idea": "Bands that break up a page. The four-up 'The Land at The Boulders' lives here too.",
           "items": [
             {
               "id": "web-section-banner-1",
@@ -257,6 +257,20 @@ window.DRAPER_PROJECT = {
               "image": "web-section-banner-8.jpg",
               "w": 1440,
               "h": 889
+            },
+            {
+              "id": "web-seasons-1",
+              "title": "Seasons 1",
+              "image": "web-seasons-1.jpg",
+              "w": 1440,
+              "h": 787
+            },
+            {
+              "id": "web-seasons-2",
+              "title": "Seasons 2",
+              "image": "web-seasons-2.jpg",
+              "w": 1440,
+              "h": 787
             }
           ]
         },
@@ -469,35 +483,7 @@ window.DRAPER_PROJECT = {
         {
           "id": "seasons",
           "name": "Seasons",
-          "idea": "The seasonal gradient plates used as web surfaces.",
-          "items": [
-            {
-              "id": "web-seasons-1",
-              "title": "Seasons 1",
-              "image": "web-seasons-1.jpg",
-              "w": 1440,
-              "h": 787
-            },
-            {
-              "id": "web-seasons-2",
-              "title": "Seasons 2",
-              "image": "web-seasons-2.jpg",
-              "w": 1440,
-              "h": 787
-            },
-            {
-              "id": "web-seasons-3",
-              "title": "Seasons 3",
-              "image": "web-seasons-3.jpg",
-              "w": 1440,
-              "h": 856
-            }
-          ]
-        },
-        {
-          "id": "illustration",
-          "name": "Illustration",
-          "idea": "The drawn work carrying full screens. Animals and plates in place of photography.",
+          "idea": "The year on the land, told in panels \u2014 what was filed under Illustration is all seasonal.",
           "items": [
             {
               "id": "web-illustration-1",
@@ -535,12 +521,21 @@ window.DRAPER_PROJECT = {
               "h": 856
             },
             {
-              "id": "web-illustration-6-motion",
-              "title": "Illustration 6 \u00b7 Motion",
-              "video": "web-illustration-6-motion.webm",
-              "poster": "web-illustration-6-motion.jpg",
+              "id": "web-seasons-3",
+              "title": "Seasons 3",
+              "image": "web-seasons-3.jpg",
               "w": 1440,
-              "h": 856
+              "h": 856,
+              "motion": "web-seasons-3-motion"
+            },
+            {
+              "id": "web-seasons-3-motion",
+              "title": "Seasons 3 \u00b7 Motion",
+              "video": "web-seasons-3-motion.webm",
+              "poster": "web-seasons-3-motion.jpg",
+              "w": 1440,
+              "h": 856,
+              "still": "web-seasons-3"
             }
           ]
         },
@@ -623,11 +618,17 @@ window.DRAPER_PROJECT = {
               "h": 939
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "email",
+      "name": "Email",
+      "groups": [
         {
-          "id": "letter",
-          "name": "Letter",
-          "idea": "The letter format shown in a web context.",
+          "id": "confirmation",
+          "name": "Confirmation",
+          "idea": "What lands in the inbox after a booking. Not a page \u2014 a message.",
           "items": [
             {
               "id": "web-letter-1",
@@ -652,44 +653,10 @@ window.DRAPER_PROJECT = {
       "name": "Social",
       "groups": [
         {
-          "id": "motion",
-          "name": "Motion",
-          "idea": "Posts built on movement. Panned shots, riders, and layouts that move with them.",
+          "id": "field-notes",
+          "name": "Field Notes",
+          "idea": "The dated editorial template: a header, a note from the day, and the mark at the foot.",
           "items": [
-            {
-              "id": "social-motion-1",
-              "title": "Motion 1",
-              "image": "social-motion-1.jpg",
-              "w": 704,
-              "h": 857,
-              "motion": "social-motion-1-motion"
-            },
-            {
-              "id": "social-motion-1-motion",
-              "title": "Motion 1 \u00b7 Motion",
-              "video": "social-motion-1-motion.webm",
-              "poster": "social-motion-1-motion.jpg",
-              "w": 1080,
-              "h": 1315,
-              "still": "social-motion-1"
-            },
-            {
-              "id": "social-motion-2",
-              "title": "Motion 2",
-              "image": "social-motion-2.jpg",
-              "w": 1080,
-              "h": 1350,
-              "motion": "social-motion-2-motion"
-            },
-            {
-              "id": "social-motion-2-motion",
-              "title": "Motion 2 \u00b7 Motion",
-              "video": "social-motion-2-motion.webm",
-              "poster": "social-motion-2-motion.jpg",
-              "w": 1080,
-              "h": 1315,
-              "still": "social-motion-2"
-            },
             {
               "id": "social-motion-3",
               "title": "Motion 3",
@@ -771,27 +738,6 @@ window.DRAPER_PROJECT = {
               "h": 1350
             },
             {
-              "id": "social-motion-13",
-              "title": "Motion 13",
-              "image": "social-motion-13.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-motion-14",
-              "title": "Motion 14",
-              "image": "social-motion-14.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-motion-15",
-              "title": "Motion 15",
-              "image": "social-motion-15.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
               "id": "social-motion-16",
               "title": "Motion 16",
               "image": "social-motion-16.jpg",
@@ -809,16 +755,387 @@ window.DRAPER_PROJECT = {
               "still": "social-motion-16"
             },
             {
-              "id": "social-motion-17",
-              "title": "Motion 17",
-              "image": "social-motion-17.jpg",
+              "id": "social-motion-18",
+              "title": "Motion 18",
+              "image": "social-motion-18.jpg",
               "w": 1080,
               "h": 1350
             },
             {
-              "id": "social-motion-18",
-              "title": "Motion 18",
-              "image": "social-motion-18.jpg",
+              "id": "social-gradient-2",
+              "title": "Gradient 2",
+              "image": "social-gradient-2.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-gradient-9",
+              "title": "Gradient 9",
+              "image": "social-gradient-9.jpg",
+              "w": 1080,
+              "h": 1350
+            }
+          ]
+        },
+        {
+          "id": "stories",
+          "name": "Stories",
+          "idea": "Full-height posts carrying the story chrome \u2014 progress bar, avatar, a way to book.",
+          "items": [
+            {
+              "id": "social-blurred-image-4",
+              "title": "Blurred Image 4",
+              "image": "social-blurred-image-4.jpg",
+              "w": 1080,
+              "h": 1920
+            },
+            {
+              "id": "social-blurred-image-5",
+              "title": "Blurred Image 5",
+              "image": "social-blurred-image-5.jpg",
+              "w": 1080,
+              "h": 1920
+            },
+            {
+              "id": "social-blurred-image-6",
+              "title": "Blurred Image 6",
+              "image": "social-blurred-image-6.jpg",
+              "w": 1080,
+              "h": 1920
+            },
+            {
+              "id": "social-blurred-image-7",
+              "title": "Blurred Image 7",
+              "image": "social-blurred-image-7.jpg",
+              "w": 1080,
+              "h": 1920
+            },
+            {
+              "id": "social-blurred-image-7-motion",
+              "title": "Blurred Image 7 \u00b7 Motion",
+              "video": "social-blurred-image-7-motion.webm",
+              "poster": "social-blurred-image-7-motion.jpg",
+              "w": 1080,
+              "h": 1920
+            },
+            {
+              "id": "social-blurred-image-9",
+              "title": "Blurred Image 9",
+              "image": "social-blurred-image-9.jpg",
+              "w": 1080,
+              "h": 1920
+            },
+            {
+              "id": "social-blurred-image-10-motion",
+              "title": "Blurred Image 10 \u00b7 Motion",
+              "video": "social-blurred-image-10-motion.webm",
+              "poster": "social-blurred-image-10-motion.jpg",
+              "w": 1080,
+              "h": 1920
+            }
+          ]
+        },
+        {
+          "id": "soft-focus",
+          "name": "Soft Focus",
+          "idea": "Copy set on a photograph thrown far out of focus, so the words carry it.",
+          "items": [
+            {
+              "id": "social-blurred-image-1",
+              "title": "Blurred Image 1",
+              "image": "social-blurred-image-1.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-blurred-image-2",
+              "title": "Blurred Image 2",
+              "image": "social-blurred-image-2.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-blurred-image-3",
+              "title": "Blurred Image 3",
+              "image": "social-blurred-image-3.jpg",
+              "w": 1080,
+              "h": 1350,
+              "motion": "social-blurred-image-3-motion"
+            },
+            {
+              "id": "social-blurred-image-3-motion",
+              "title": "Blurred Image 3 \u00b7 Motion",
+              "video": "social-blurred-image-3-motion.webm",
+              "poster": "social-blurred-image-3-motion.jpg",
+              "w": 1080,
+              "h": 1350,
+              "still": "social-blurred-image-3"
+            },
+            {
+              "id": "social-blurred-image-8",
+              "title": "Blurred Image 8",
+              "image": "social-blurred-image-8.jpg",
+              "w": 1080,
+              "h": 1350,
+              "motion": "social-blurred-image-8-motion"
+            },
+            {
+              "id": "social-blurred-image-8-motion",
+              "title": "Blurred Image 8 \u00b7 Motion",
+              "video": "social-blurred-image-8-motion.webm",
+              "poster": "social-blurred-image-8-motion.jpg",
+              "w": 1080,
+              "h": 1350,
+              "still": "social-blurred-image-8"
+            },
+            {
+              "id": "social-gradient-3",
+              "title": "Gradient 3",
+              "image": "social-gradient-3.jpg",
+              "w": 1080,
+              "h": 1350,
+              "motion": "social-gradient-3-motion"
+            },
+            {
+              "id": "social-gradient-3-motion",
+              "title": "Gradient 3 \u00b7 Motion",
+              "video": "social-gradient-3-motion.webm",
+              "poster": "social-gradient-3-motion.jpg",
+              "w": 1080,
+              "h": 1350,
+              "still": "social-gradient-3"
+            },
+            {
+              "id": "social-gradient-4",
+              "title": "Gradient 4",
+              "image": "social-gradient-4.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-gradient-8",
+              "title": "Gradient 8",
+              "image": "social-gradient-8.jpg",
+              "w": 1080,
+              "h": 1350,
+              "motion": "social-gradient-8-motion"
+            },
+            {
+              "id": "social-gradient-8-motion",
+              "title": "Gradient 8 \u00b7 Motion",
+              "video": "social-gradient-8-motion.webm",
+              "poster": "social-gradient-8-motion.jpg",
+              "w": 1080,
+              "h": 1350,
+              "still": "social-gradient-8"
+            }
+          ]
+        },
+        {
+          "id": "gradient",
+          "name": "Gradient",
+          "idea": "Light as the whole subject \u2014 no photograph, only the colour of an hour.",
+          "items": [
+            {
+              "id": "social-gradient-1",
+              "title": "Gradient 1",
+              "image": "social-gradient-1.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-gradient-5",
+              "title": "Gradient 5",
+              "image": "social-gradient-5.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-gradient-6",
+              "title": "Gradient 6",
+              "image": "social-gradient-6.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-gradient-7",
+              "title": "Gradient 7",
+              "image": "social-gradient-7.jpg",
+              "w": 1080,
+              "h": 1350
+            }
+          ]
+        },
+        {
+          "id": "framed-poster",
+          "name": "Framed Poster",
+          "idea": "A printed card laid over a ground \u2014 the same poster on gradients, interiors and cutouts.",
+          "items": [
+            {
+              "id": "social-gradient-10",
+              "title": "Gradient 10",
+              "image": "social-gradient-10.jpg",
+              "w": 1080,
+              "h": 1350,
+              "motion": "social-gradient-10-motion"
+            },
+            {
+              "id": "social-gradient-10-motion",
+              "title": "Gradient 10 \u00b7 Motion",
+              "video": "social-gradient-10-motion.webm",
+              "poster": "social-gradient-10-motion.jpg",
+              "w": 1080,
+              "h": 1350,
+              "still": "social-gradient-10"
+            },
+            {
+              "id": "social-gradient-11",
+              "title": "Gradient 11",
+              "image": "social-gradient-11.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-gradient-12-motion",
+              "title": "Gradient 12 \u00b7 Motion",
+              "video": "social-gradient-12-motion.webm",
+              "poster": "social-gradient-12-motion.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-lodging-5",
+              "title": "Lodging 5",
+              "image": "social-lodging-5.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-lodging-6",
+              "title": "Lodging 6",
+              "image": "social-lodging-6.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-cutout-1",
+              "title": "Cutout 1",
+              "image": "social-cutout-1.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-cutout-2",
+              "title": "Cutout 2",
+              "image": "social-cutout-2.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-cutout-5",
+              "title": "Cutout 5",
+              "image": "social-cutout-5.jpg",
+              "w": 1080,
+              "h": 1350
+            }
+          ]
+        },
+        {
+          "id": "motion-blur",
+          "name": "Motion Blur",
+          "idea": "The land moving past. Photographs taken at a speed that keeps nothing still.",
+          "items": [
+            {
+              "id": "social-motion-1",
+              "title": "Motion 1",
+              "image": "social-motion-1.jpg",
+              "w": 704,
+              "h": 857,
+              "motion": "social-motion-1-motion"
+            },
+            {
+              "id": "social-motion-1-motion",
+              "title": "Motion 1 \u00b7 Motion",
+              "video": "social-motion-1-motion.webm",
+              "poster": "social-motion-1-motion.jpg",
+              "w": 1080,
+              "h": 1315,
+              "still": "social-motion-1"
+            },
+            {
+              "id": "social-motion-2-motion",
+              "title": "Motion 2 \u00b7 Motion",
+              "video": "social-motion-2-motion.webm",
+              "poster": "social-motion-2-motion.jpg",
+              "w": 1080,
+              "h": 1315
+            }
+          ]
+        },
+        {
+          "id": "route-card",
+          "name": "Route Card",
+          "idea": "Route and ride data as a card: name, time, distance, difficulty.",
+          "items": [
+            {
+              "id": "social-route-card-1",
+              "title": "Route Card 1",
+              "image": "social-route-card-1.jpg",
+              "w": 1080,
+              "h": 1350,
+              "motion": "social-route-card-1-motion"
+            },
+            {
+              "id": "social-route-card-1-motion",
+              "title": "Route Card 1 \u00b7 Motion",
+              "video": "social-route-card-1-motion.webm",
+              "poster": "social-route-card-1-motion.jpg",
+              "w": 1080,
+              "h": 1350,
+              "still": "social-route-card-1"
+            },
+            {
+              "id": "social-route-card-2",
+              "title": "Route Card 2",
+              "image": "social-route-card-2.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-route-card-3",
+              "title": "Route Card 3",
+              "image": "social-route-card-3.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-text-band-4",
+              "title": "Text Band 4",
+              "image": "social-text-band-4.jpg",
+              "w": 1080,
+              "h": 1350,
+              "motion": "social-text-band-4-motion"
+            },
+            {
+              "id": "social-text-band-4-motion",
+              "title": "Text Band 4 \u00b7 Motion",
+              "video": "social-text-band-4-motion.webm",
+              "poster": "social-text-band-4-motion.jpg",
+              "w": 1080,
+              "h": 1350,
+              "still": "social-text-band-4"
+            },
+            {
+              "id": "social-text-band-5",
+              "title": "Text Band 5",
+              "image": "social-text-band-5.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-text-band-6",
+              "title": "Text Band 6",
+              "image": "social-text-band-6.jpg",
               "w": 1080,
               "h": 1350
             }
@@ -965,286 +1282,28 @@ window.DRAPER_PROJECT = {
           ]
         },
         {
-          "id": "gradient",
-          "name": "Gradient",
-          "idea": "The gradient plates as posts. Season colours holding a single line of type.",
+          "id": "text-band",
+          "name": "Text Band",
+          "idea": "A photograph with a band of copy across it.",
           "items": [
             {
-              "id": "social-gradient-1",
-              "title": "Gradient 1",
-              "image": "social-gradient-1.jpg",
+              "id": "social-text-band-1",
+              "title": "Text Band 1",
+              "image": "social-text-band-1.jpg",
               "w": 1080,
               "h": 1350
             },
             {
-              "id": "social-gradient-2",
-              "title": "Gradient 2",
-              "image": "social-gradient-2.jpg",
+              "id": "social-text-band-2",
+              "title": "Text Band 2",
+              "image": "social-text-band-2.jpg",
               "w": 1080,
               "h": 1350
             },
             {
-              "id": "social-gradient-3",
-              "title": "Gradient 3",
-              "image": "social-gradient-3.jpg",
-              "w": 1080,
-              "h": 1350,
-              "motion": "social-gradient-3-motion"
-            },
-            {
-              "id": "social-gradient-3-motion",
-              "title": "Gradient 3 \u00b7 Motion",
-              "video": "social-gradient-3-motion.webm",
-              "poster": "social-gradient-3-motion.jpg",
-              "w": 1080,
-              "h": 1350,
-              "still": "social-gradient-3"
-            },
-            {
-              "id": "social-gradient-4",
-              "title": "Gradient 4",
-              "image": "social-gradient-4.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-gradient-5",
-              "title": "Gradient 5",
-              "image": "social-gradient-5.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-gradient-6",
-              "title": "Gradient 6",
-              "image": "social-gradient-6.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-gradient-7",
-              "title": "Gradient 7",
-              "image": "social-gradient-7.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-gradient-8",
-              "title": "Gradient 8",
-              "image": "social-gradient-8.jpg",
-              "w": 1080,
-              "h": 1350,
-              "motion": "social-gradient-8-motion"
-            },
-            {
-              "id": "social-gradient-8-motion",
-              "title": "Gradient 8 \u00b7 Motion",
-              "video": "social-gradient-8-motion.webm",
-              "poster": "social-gradient-8-motion.jpg",
-              "w": 1080,
-              "h": 1350,
-              "still": "social-gradient-8"
-            },
-            {
-              "id": "social-gradient-9",
-              "title": "Gradient 9",
-              "image": "social-gradient-9.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-gradient-10",
-              "title": "Gradient 10",
-              "image": "social-gradient-10.jpg",
-              "w": 1080,
-              "h": 1350,
-              "motion": "social-gradient-10-motion"
-            },
-            {
-              "id": "social-gradient-10-motion",
-              "title": "Gradient 10 \u00b7 Motion",
-              "video": "social-gradient-10-motion.webm",
-              "poster": "social-gradient-10-motion.jpg",
-              "w": 1080,
-              "h": 1350,
-              "still": "social-gradient-10"
-            },
-            {
-              "id": "social-gradient-11",
-              "title": "Gradient 11",
-              "image": "social-gradient-11.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-gradient-12-motion",
-              "title": "Gradient 12 \u00b7 Motion",
-              "video": "social-gradient-12-motion.webm",
-              "poster": "social-gradient-12-motion.jpg",
-              "w": 1080,
-              "h": 1350
-            }
-          ]
-        },
-        {
-          "id": "blurred-image",
-          "name": "Blurred Image",
-          "idea": "Photography softened into gradients, with the type doing the work.",
-          "items": [
-            {
-              "id": "social-blurred-image-1",
-              "title": "Blurred Image 1",
-              "image": "social-blurred-image-1.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-blurred-image-2",
-              "title": "Blurred Image 2",
-              "image": "social-blurred-image-2.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-blurred-image-3",
-              "title": "Blurred Image 3",
-              "image": "social-blurred-image-3.jpg",
-              "w": 1080,
-              "h": 1350,
-              "motion": "social-blurred-image-3-motion"
-            },
-            {
-              "id": "social-blurred-image-3-motion",
-              "title": "Blurred Image 3 \u00b7 Motion",
-              "video": "social-blurred-image-3-motion.webm",
-              "poster": "social-blurred-image-3-motion.jpg",
-              "w": 1080,
-              "h": 1350,
-              "still": "social-blurred-image-3"
-            },
-            {
-              "id": "social-blurred-image-4",
-              "title": "Blurred Image 4",
-              "image": "social-blurred-image-4.jpg",
-              "w": 1080,
-              "h": 1920
-            },
-            {
-              "id": "social-blurred-image-5",
-              "title": "Blurred Image 5",
-              "image": "social-blurred-image-5.jpg",
-              "w": 1080,
-              "h": 1920
-            },
-            {
-              "id": "social-blurred-image-6",
-              "title": "Blurred Image 6",
-              "image": "social-blurred-image-6.jpg",
-              "w": 1080,
-              "h": 1920
-            },
-            {
-              "id": "social-blurred-image-7",
-              "title": "Blurred Image 7",
-              "image": "social-blurred-image-7.jpg",
-              "w": 1080,
-              "h": 1920,
-              "motion": "social-blurred-image-7-motion"
-            },
-            {
-              "id": "social-blurred-image-7-motion",
-              "title": "Blurred Image 7 \u00b7 Motion",
-              "video": "social-blurred-image-7-motion.webm",
-              "poster": "social-blurred-image-7-motion.jpg",
-              "w": 1080,
-              "h": 1920,
-              "still": "social-blurred-image-7"
-            },
-            {
-              "id": "social-blurred-image-8",
-              "title": "Blurred Image 8",
-              "image": "social-blurred-image-8.jpg",
-              "w": 1080,
-              "h": 1350,
-              "motion": "social-blurred-image-8-motion"
-            },
-            {
-              "id": "social-blurred-image-8-motion",
-              "title": "Blurred Image 8 \u00b7 Motion",
-              "video": "social-blurred-image-8-motion.webm",
-              "poster": "social-blurred-image-8-motion.jpg",
-              "w": 1080,
-              "h": 1350,
-              "still": "social-blurred-image-8"
-            },
-            {
-              "id": "social-blurred-image-9",
-              "title": "Blurred Image 9",
-              "image": "social-blurred-image-9.jpg",
-              "w": 1080,
-              "h": 1920
-            },
-            {
-              "id": "social-blurred-image-10-motion",
-              "title": "Blurred Image 10 \u00b7 Motion",
-              "video": "social-blurred-image-10-motion.webm",
-              "poster": "social-blurred-image-10-motion.jpg",
-              "w": 1080,
-              "h": 1920
-            }
-          ]
-        },
-        {
-          "id": "lodging",
-          "name": "Lodging",
-          "idea": "The casitas as social posts.",
-          "items": [
-            {
-              "id": "social-lodging-1",
-              "title": "Lodging 1",
-              "image": "social-lodging-1.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-lodging-2",
-              "title": "Lodging 2",
-              "image": "social-lodging-2.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-lodging-3",
-              "title": "Lodging 3",
-              "image": "social-lodging-3.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-lodging-4",
-              "title": "Lodging 4",
-              "image": "social-lodging-4.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-lodging-5",
-              "title": "Lodging 5",
-              "image": "social-lodging-5.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-lodging-6",
-              "title": "Lodging 6",
-              "image": "social-lodging-6.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-lodging-7",
-              "title": "Lodging 7",
-              "image": "social-lodging-7.jpg",
+              "id": "social-text-band-3",
+              "title": "Text Band 3",
+              "image": "social-text-band-3.jpg",
               "w": 1080,
               "h": 1350
             }
@@ -1253,7 +1312,7 @@ window.DRAPER_PROJECT = {
         {
           "id": "illustration",
           "name": "Illustration",
-          "idea": "The drawn animals and plates in post form.",
+          "idea": "Drawn animals and plants, framed and captioned.",
           "items": [
             {
               "id": "social-illustration-1",
@@ -1276,6 +1335,27 @@ window.DRAPER_PROJECT = {
               "w": 1080,
               "h": 1350
             },
+            {
+              "id": "social-motion-14",
+              "title": "Motion 14",
+              "image": "social-motion-14.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-motion-15",
+              "title": "Motion 15",
+              "image": "social-motion-15.jpg",
+              "w": 1080,
+              "h": 1350
+            }
+          ]
+        },
+        {
+          "id": "seasons",
+          "name": "Seasons",
+          "idea": "The Living Desert panels and the seasonal posters \u2014 one subject, one group.",
+          "items": [
             {
               "id": "social-illustration-4",
               "title": "Illustration 4",
@@ -1322,63 +1402,122 @@ window.DRAPER_PROJECT = {
               "poster": "social-illustration-8-motion.jpg",
               "w": 1080,
               "h": 1350
+            },
+            {
+              "id": "social-seasons-1",
+              "title": "Seasons 1",
+              "image": "social-seasons-1.jpg",
+              "w": 1080,
+              "h": 1350,
+              "motion": "social-seasons-1-motion"
+            },
+            {
+              "id": "social-seasons-1-motion",
+              "title": "Seasons 1 \u00b7 Motion",
+              "video": "social-seasons-1-motion.webm",
+              "poster": "social-seasons-1-motion.jpg",
+              "w": 1080,
+              "h": 1350,
+              "still": "social-seasons-1"
+            },
+            {
+              "id": "social-motion-13",
+              "title": "Motion 13",
+              "image": "social-motion-13.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-motion-17",
+              "title": "Motion 17",
+              "image": "social-motion-17.jpg",
+              "w": 1080,
+              "h": 1350
             }
           ]
         },
         {
-          "id": "text-band",
-          "name": "Text Band",
-          "idea": "Text-led posts built on small bands of copy.",
+          "id": "lodging",
+          "name": "Lodging",
+          "idea": "The casitas as social posts.",
           "items": [
             {
-              "id": "social-text-band-1",
-              "title": "Text Band 1",
-              "image": "social-text-band-1.jpg",
+              "id": "social-lodging-1",
+              "title": "Lodging 1",
+              "image": "social-lodging-1.jpg",
               "w": 1080,
               "h": 1350
             },
             {
-              "id": "social-text-band-2",
-              "title": "Text Band 2",
-              "image": "social-text-band-2.jpg",
+              "id": "social-lodging-2",
+              "title": "Lodging 2",
+              "image": "social-lodging-2.jpg",
               "w": 1080,
               "h": 1350
             },
             {
-              "id": "social-text-band-3",
-              "title": "Text Band 3",
-              "image": "social-text-band-3.jpg",
+              "id": "social-lodging-3",
+              "title": "Lodging 3",
+              "image": "social-lodging-3.jpg",
               "w": 1080,
               "h": 1350
             },
             {
-              "id": "social-text-band-4",
-              "title": "Text Band 4",
-              "image": "social-text-band-4.jpg",
+              "id": "social-lodging-4",
+              "title": "Lodging 4",
+              "image": "social-lodging-4.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-lodging-7",
+              "title": "Lodging 7",
+              "image": "social-lodging-7.jpg",
+              "w": 1080,
+              "h": 1350
+            }
+          ]
+        },
+        {
+          "id": "quote",
+          "name": "Quote",
+          "idea": "Copy-led posts where the words are the subject.",
+          "items": [
+            {
+              "id": "social-quote-1",
+              "title": "Quote 1",
+              "image": "social-quote-1.jpg",
               "w": 1080,
               "h": 1350,
-              "motion": "social-text-band-4-motion"
+              "motion": "social-quote-1-motion"
             },
             {
-              "id": "social-text-band-4-motion",
-              "title": "Text Band 4 \u00b7 Motion",
-              "video": "social-text-band-4-motion.webm",
-              "poster": "social-text-band-4-motion.jpg",
+              "id": "social-quote-1-motion",
+              "title": "Quote 1 \u00b7 Motion",
+              "video": "social-quote-1-motion.webm",
+              "poster": "social-quote-1-motion.jpg",
               "w": 1080,
               "h": 1350,
-              "still": "social-text-band-4"
+              "still": "social-quote-1"
             },
             {
-              "id": "social-text-band-5",
-              "title": "Text Band 5",
-              "image": "social-text-band-5.jpg",
+              "id": "social-quote-2",
+              "title": "Quote 2",
+              "image": "social-quote-2.jpg",
               "w": 1080,
               "h": 1350
             },
             {
-              "id": "social-text-band-6",
-              "title": "Text Band 6",
-              "image": "social-text-band-6.jpg",
+              "id": "social-quote-3",
+              "title": "Quote 3",
+              "image": "social-quote-3.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-quote-4",
+              "title": "Quote 4",
+              "image": "social-quote-4.jpg",
               "w": 1080,
               "h": 1350
             }
@@ -1436,22 +1575,8 @@ window.DRAPER_PROJECT = {
         {
           "id": "cutout",
           "name": "Cutout",
-          "idea": "Photography cut out and placed on paper grounds.",
+          "idea": "Shapes cut clean out of the photograph.",
           "items": [
-            {
-              "id": "social-cutout-1",
-              "title": "Cutout 1",
-              "image": "social-cutout-1.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-cutout-2",
-              "title": "Cutout 2",
-              "image": "social-cutout-2.jpg",
-              "w": 1080,
-              "h": 1350
-            },
             {
               "id": "social-cutout-3",
               "title": "Cutout 3",
@@ -1463,58 +1588,6 @@ window.DRAPER_PROJECT = {
               "id": "social-cutout-4",
               "title": "Cutout 4",
               "image": "social-cutout-4.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-cutout-5",
-              "title": "Cutout 5",
-              "image": "social-cutout-5.jpg",
-              "w": 1080,
-              "h": 1350
-            }
-          ]
-        },
-        {
-          "id": "quote",
-          "name": "Quote",
-          "idea": "Copy-led posts where the words are the subject.",
-          "items": [
-            {
-              "id": "social-quote-1",
-              "title": "Quote 1",
-              "image": "social-quote-1.jpg",
-              "w": 1080,
-              "h": 1350,
-              "motion": "social-quote-1-motion"
-            },
-            {
-              "id": "social-quote-1-motion",
-              "title": "Quote 1 \u00b7 Motion",
-              "video": "social-quote-1-motion.webm",
-              "poster": "social-quote-1-motion.jpg",
-              "w": 1080,
-              "h": 1350,
-              "still": "social-quote-1"
-            },
-            {
-              "id": "social-quote-2",
-              "title": "Quote 2",
-              "image": "social-quote-2.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-quote-3",
-              "title": "Quote 3",
-              "image": "social-quote-3.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-quote-4",
-              "title": "Quote 4",
-              "image": "social-quote-4.jpg",
               "w": 1080,
               "h": 1350
             }
@@ -1556,44 +1629,6 @@ window.DRAPER_PROJECT = {
           ]
         },
         {
-          "id": "route-card",
-          "name": "Route Card",
-          "idea": "Route information as cards. Name, time, and distance.",
-          "items": [
-            {
-              "id": "social-route-card-1",
-              "title": "Route Card 1",
-              "image": "social-route-card-1.jpg",
-              "w": 1080,
-              "h": 1350,
-              "motion": "social-route-card-1-motion"
-            },
-            {
-              "id": "social-route-card-1-motion",
-              "title": "Route Card 1 \u00b7 Motion",
-              "video": "social-route-card-1-motion.webm",
-              "poster": "social-route-card-1-motion.jpg",
-              "w": 1080,
-              "h": 1350,
-              "still": "social-route-card-1"
-            },
-            {
-              "id": "social-route-card-2",
-              "title": "Route Card 2",
-              "image": "social-route-card-2.jpg",
-              "w": 1080,
-              "h": 1350
-            },
-            {
-              "id": "social-route-card-3",
-              "title": "Route Card 3",
-              "image": "social-route-card-3.jpg",
-              "w": 1080,
-              "h": 1350
-            }
-          ]
-        },
-        {
           "id": "inset-photo",
           "name": "Inset Photo",
           "idea": "A photograph placed on a photographic ground.",
@@ -1618,6 +1653,13 @@ window.DRAPER_PROJECT = {
               "image": "social-inset-photo-3.jpg",
               "w": 1080,
               "h": 1350
+            },
+            {
+              "id": "social-motion-2",
+              "title": "Motion 2",
+              "image": "social-motion-2.jpg",
+              "w": 1080,
+              "h": 1350
             }
           ]
         },
@@ -1639,30 +1681,6 @@ window.DRAPER_PROJECT = {
               "image": "social-photo-poster-2.jpg",
               "w": 1080,
               "h": 1350
-            }
-          ]
-        },
-        {
-          "id": "seasons",
-          "name": "Seasons",
-          "idea": "The season plates in post form.",
-          "items": [
-            {
-              "id": "social-seasons-1",
-              "title": "Seasons 1",
-              "image": "social-seasons-1.jpg",
-              "w": 1080,
-              "h": 1350,
-              "motion": "social-seasons-1-motion"
-            },
-            {
-              "id": "social-seasons-1-motion",
-              "title": "Seasons 1 \u00b7 Motion",
-              "video": "social-seasons-1-motion.webm",
-              "poster": "social-seasons-1-motion.jpg",
-              "w": 1080,
-              "h": 1350,
-              "still": "social-seasons-1"
             }
           ]
         },

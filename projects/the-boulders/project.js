@@ -81,64 +81,73 @@ window.DRAPER_PROJECT = {
           "idea": "The first full screen. Testing whether photography, the wordmark, or a dark ground should lead.",
           "items": [
             {
+              "id": "web-hero-new-motion",
+              "title": "Hero 1 \u00b7 Motion",
+              "video": "web-hero-new-motion.webm",
+              "poster": "web-hero-new-motion.jpg",
+              "w": 2332,
+              "h": 1440,
+              "pin": true
+            },
+            {
               "id": "web-hero-1",
-              "title": "Hero 1",
+              "title": "Hero 2",
               "image": "web-hero-1.jpg",
               "w": 1440,
               "h": 889
             },
             {
               "id": "web-hero-2",
-              "title": "Hero 2",
+              "title": "Hero 3",
               "image": "web-hero-2.jpg",
               "w": 1440,
               "h": 889
             },
             {
               "id": "web-hero-3",
-              "title": "Hero 3",
+              "title": "Hero 4",
               "image": "web-hero-3.jpg",
               "w": 1440,
               "h": 939
             },
             {
               "id": "web-hero-4",
-              "title": "Hero 4",
+              "title": "Hero 5",
               "image": "web-hero-4.jpg",
               "w": 1440,
               "h": 889
             },
             {
               "id": "web-hero-5",
-              "title": "Hero 5",
+              "title": "Hero 6",
               "image": "web-hero-5.jpg",
               "w": 1440,
               "h": 889
             },
             {
               "id": "web-hero-6",
-              "title": "Hero 6",
+              "title": "Hero 7",
               "image": "web-hero-6.jpg",
               "w": 1440,
               "h": 889
             },
             {
               "id": "web-hero-7",
-              "title": "Hero 7",
+              "title": "Hero 8",
               "image": "web-hero-7.jpg",
               "w": 1440,
               "h": 889
             },
             {
               "id": "web-hero-8",
-              "title": "Hero 8",
+              "title": "Hero 9",
               "image": "web-hero-8.jpg",
               "w": 1440,
               "h": 889
             },
             {
               "id": "web-photo-overlay-1",
-              "title": "Hero 9",
+              "title": "Hero 10",
               "image": "web-photo-overlay-1.jpg",
               "w": 1440,
               "h": 889
@@ -1257,6 +1266,20 @@ window.DRAPER_PROJECT = {
               "image": "social-photo-overlay-10.jpg",
               "w": 1080,
               "h": 1350
+            },
+            {
+              "id": "social-photo-overlay-11",
+              "title": "Photo Overlay 11",
+              "image": "social-photo-overlay-11.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-photo-overlay-12",
+              "title": "Photo Overlay 12",
+              "image": "social-photo-overlay-12.jpg",
+              "w": 1080,
+              "h": 1350
             }
           ]
         },
@@ -1325,6 +1348,90 @@ window.DRAPER_PROJECT = {
               "id": "social-motion-15",
               "title": "Illustration 5",
               "image": "social-motion-15.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-illustration-9",
+              "title": "Illustration 6",
+              "image": "social-illustration-9.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-illustration-10",
+              "title": "Illustration 7",
+              "image": "social-illustration-10.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-illustration-11",
+              "title": "Illustration 8",
+              "image": "social-illustration-11.jpg",
+              "w": 1080,
+              "h": 1350
+            }
+          ]
+        },
+        {
+          "id": "illustration-overlay",
+          "name": "Illustration Overlay",
+          "idea": "A drawn plant laid over the photograph, running off the edge of the frame.",
+          "items": [
+            {
+              "id": "social-illustration-overlay-1",
+              "title": "Illustration Overlay 1",
+              "image": "social-illustration-overlay-1.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-illustration-overlay-2",
+              "title": "Illustration Overlay 2",
+              "image": "social-illustration-overlay-2.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-illustration-overlay-3",
+              "title": "Illustration Overlay 3",
+              "image": "social-illustration-overlay-3.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-illustration-overlay-4",
+              "title": "Illustration Overlay 4",
+              "image": "social-illustration-overlay-4.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-illustration-overlay-5",
+              "title": "Illustration Overlay 5",
+              "image": "social-illustration-overlay-5.jpg",
+              "w": 1080,
+              "h": 1350
+            }
+          ]
+        },
+        {
+          "id": "tile-grid",
+          "name": "Tile Grid",
+          "idea": "One frame repeated across a grid, with the line of copy held in the gap.",
+          "items": [
+            {
+              "id": "social-tile-grid-1",
+              "title": "Tile Grid 1",
+              "image": "social-tile-grid-1.jpg",
+              "w": 1080,
+              "h": 1350
+            },
+            {
+              "id": "social-tile-grid-2",
+              "title": "Tile Grid 2",
+              "image": "social-tile-grid-2.jpg",
               "w": 1080,
               "h": 1350
             }

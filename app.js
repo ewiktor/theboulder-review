@@ -82,7 +82,12 @@
       const j = Math.floor(rand() * (i + 1));
       [a[i], a[j]] = [a[j], a[i]];
     }
-    return a;
+    /* A frame marked `pin` in the manifest is dealt first, in the order it
+       appears there — the shuffle is for everything after it. */
+    const pinned = flat.filter((r) => r.item.pin);
+    if (!pinned.length) return a;
+    const rest = a.filter((r) => !r.item.pin);
+    return [...pinned, ...rest];
   })();
 
   /* In the Motion view a card shows the STILL it is bound to, not the clip.
@@ -92,10 +97,17 @@
      share one "the idea" line. The still's id is the canonical key, which is
      also where every idea written so far already lives. */
 
+  /* `pin` holds a frame at the front of whatever view it appears in. */
+  const pinnedFirst = (rows) => {
+    const pin = rows.filter((r) => r.item.pin);
+    return pin.length ? [...pin, ...rows.filter((r) => !r.item.pin)] : rows;
+  };
+
   const visible = () => {
-    if (selection.type === "lane") return flat.filter((r) => r.lane.id === selection.laneId);
+    if (selection.type === "lane")
+      return pinnedFirst(flat.filter((r) => r.lane.id === selection.laneId));
     if (selection.type === "group")
-      return flat.filter((r) => r.lane.id === selection.laneId && r.group.id === selection.groupId);
+      return pinnedFirst(flat.filter((r) => r.lane.id === selection.laneId && r.group.id === selection.groupId));
     return shuffled;
   };
 

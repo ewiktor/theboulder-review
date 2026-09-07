@@ -12,7 +12,6 @@
   let showSummary = false;
   let panelOpen = false;    // mobile: group idea/feedback sheet
   let fbOpen = false;       // mobile: the feedback popup over the walk
-  let menuOpen = false;     // the one navigation panel, opened from the bar
   let navCollapsed = localStorage.getItem("draper-review:nav") === "collapsed";
 
   const isMobile = () => window.innerWidth < 900;
@@ -171,7 +170,7 @@
        would also deadlock it: the stage sizes the image from its own
        intrinsic size, so an unloaded one is 0x0 and never intersects. */
     return `<img class="ph-img ${cls}" src="${thumb}"${full ? ` data-full="${orig}"` : ""} alt=""${
-      full ? "" : ` loading="lazy"`} style="aspect-ratio:${item.w}/${item.h}">`;
+      full ? "" : ` loading="lazy" decoding="async"`} style="aspect-ratio:${item.w}/${item.h}">`;
   };
 
   /* upgrade any open frame to full resolution in the background */
@@ -408,7 +407,6 @@
               <img class="focus__logo" src="draperlogo.svg" alt="DRAPER">
               <span class="focus__word">${esc(P.client)}</span>
             </span>
-            ${MENU_BTN}
           </div>
           <div class="focus__titlerow">
             <span class="focus__pick">
@@ -443,6 +441,12 @@
             <button class="quiet" data-action="walk:-1" ${i === 0 ? "disabled" : ""}>← Prev</button>
             <button class="quiet" data-action="walk:1" ${i === walk.length - 1 ? "disabled" : ""}>Next →</button>
           </div>
+          ${STUDIO ? `
+          <div class="focus__tools">
+            <button class="quiet quiet--tiny" data-action="summary">Feedback summary</button>
+            <button class="quiet quiet--tiny" data-action="export">Export feedback</button>
+            ${canSwitchBrand ? brandBoxHTML() : ""}
+          </div>` : ""}
         </aside>
         <div class="focus__frames">${gridHTML(visible(), gridColumnCount())}</div>
         ${mob && fbOpen ? `
@@ -463,49 +467,6 @@
       </main>`;
   }
 
-
-  /* One way into everything: where you are in the walk, every other group,
-     and the studio's own tools. It replaces the nav that used to be a
-     sidebar on one screen and two rows of tabs on the other. */
-  const MENU_BTN = `<button class="navmenu__btn" data-action="menu-open" aria-label="Menu">
-      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-        <path d="M3 6h14"></path><path d="M3 10h14"></path><path d="M3 14h14"></path>
-      </svg>
-    </button>`;
-
-  function menuHTML() {
-    if (!menuOpen) return "";
-    const here = walkIndex();
-    const lanes = P.lanes.map((l) => {
-      const rows = l.groups.map((g) => {
-        const n = walk.findIndex((w) => w.lane.id === l.id && w.group.id === g.id);
-        const done = !!STORE.get("feedback", groupKey(l.id, g.id));
-        return `<button class="navmenu__item${n === here ? " is-here" : ""}" data-action="goto:${n}">
-            <span class="navmenu__name">${esc(g.name)}</span>
-            <span class="navmenu__meta">${done ? '<i class="dot dot--blue"></i>' : ""}${g.items.length}</span>
-          </button>`;
-      }).join("");
-      return `<div class="navmenu__lane"><div class="navmenu__lanename">${esc(l.name)}</div>${rows}</div>`;
-    }).join("");
-    return `
-      <div class="navmenu">
-        <div class="navmenu__card">
-          <div class="navmenu__head">
-            <span class="navmenu__title">${esc(P.client)}</span>
-            <button class="navmenu__x" data-action="menu-close" aria-label="Close">
-              <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
-            </button>
-          </div>
-          <div class="navmenu__scroll">${lanes}</div>
-          ${STUDIO ? `
-          <div class="navmenu__tools">
-            <button class="quiet quiet--tiny" data-action="summary">Feedback summary</button>
-            <button class="quiet quiet--tiny" data-action="export">Export feedback</button>
-            ${canSwitchBrand ? brandBoxHTML() : ""}
-          </div>` : ""}
-        </div>
-      </div>`;
-  }
 
   /* Writing feedback happens over the work, not in a box parked under it. */
   function fbPopHTML() {
@@ -575,11 +536,11 @@
       <div class="detail__scrim" data-overlay></div>
       <div class="detail" data-overlay>
         <div class="detail__bar">
-          <button class="detail__close detail__close--pinned" data-action="close" aria-label="Close">✕</button>
           ${likeHTML(item.id, "likebtn--stage")}
+          <button class="detail__close detail__close--pinned" data-action="close" aria-label="Close">✕</button>
         </div>
         <div class="detail__stage">
-          <div class="detail__media">${media(shown, "ph--stage", true)}</div>
+          <div class="detail__media"><span class="detail__frame">${media(shown, "ph--stage", true)}</span></div>
           ${toggle}
           <div class="detail__pager">
             <button class="quiet" data-action="prev" ${rows.length < 2 ? "disabled" : ""}>← Prev</button>
@@ -646,7 +607,6 @@
         <header class="mobilebar">
           <img class="mobilebar__logo" src="draperlogo.svg" alt="DRAPER">
           <span class="mobilebar__ctx">${esc(P.client)}</span>
-          ${MENU_BTN}
         </header>
         ${tabsHTML()}
         ${groupHeadHTML()}
@@ -661,7 +621,7 @@
     if (main) main.scrollTop = keepScroll;
     const nav = root.querySelector(".sidebar");
     if (nav) nav.scrollTop = keepNavScroll;
-    document.body.classList.toggle("is-locked", panelOpen || !!openId || fbOpen || menuOpen);
+    setLock(wantsLock());
     root.querySelectorAll(".tabs__row").forEach((row) => {
       const on = row.querySelector(".chip.is-active");
       if (on) row.scrollLeft = Math.max(0, on.offsetLeft - row.clientWidth / 2 + on.offsetWidth / 2);
@@ -670,7 +630,6 @@
     wireVideos();
     measureBar();
     root.querySelectorAll("textarea[data-grow]").forEach(grow);
-    if (menuOpen) mountOverlay(menuHTML());
     if (fbOpen) mountOverlay(fbPopHTML());
   }
 
@@ -681,6 +640,60 @@
     ta.style.height = `${Math.max(ta.scrollHeight, 0)}px`;
   }
 
+  /* Someone else's writing arrives every few seconds. Rebuilding the page
+     for it threw away every card mid-scroll, so instead the few things
+     that can have changed are patched where they stand. */
+  function applyStoreChanges() {
+    root.querySelectorAll("[data-dotslot]").forEach((slot) => {
+      const on = !!STORE.get("feedback", slot.dataset.dotslot);
+      const has = !!slot.firstElementChild;
+      if (on !== has) slot.innerHTML = on ? '<i class="dot dot--blue"></i>' : "";
+    });
+    root.querySelectorAll("[data-likeslot]").forEach((b) => {
+      const on = liked(b.dataset.likeslot);
+      if (b.classList.contains("is-on") !== on) {
+        b.classList.toggle("is-on", on);
+        b.setAttribute("aria-pressed", String(on));
+      }
+    });
+    root.querySelectorAll("textarea[data-save]").forEach((ta) => {
+      if (ta === document.activeElement) return;
+      const next = STORE.get("feedback", ta.dataset.save) || "";
+      if (ta.value !== next) { ta.value = next; if (ta.hasAttribute("data-grow")) grow(ta); }
+    });
+    const idea = root.querySelector(".focus__idea");
+    if (idea && !editingIdea) {
+      const i = walkIndex();
+      if (i >= 0) {
+        const { lane, group } = walk[i];
+        const next = ideaFor(groupKey(lane.id, group.id), group.idea) || "Not written yet.";
+        if (idea.textContent !== next) idea.textContent = next;
+      }
+    }
+    refreshFbRow();
+  }
+
+  /* Locking the page with overflow:hidden makes iOS forget where it was and
+     repaint what it had — the doubled popup and the stutter when it opens.
+     Pinning the body at its own scroll position instead holds the page
+     still, and putting it back is exact. */
+  let lockedY = 0, isLocked = false;
+  function setLock(on) {
+    if (on === isLocked) return;
+    isLocked = on;
+    const b = document.body;
+    if (on) {
+      lockedY = window.scrollY || window.pageYOffset || 0;
+      b.style.top = `-${lockedY}px`;
+      b.classList.add("is-locked");
+    } else {
+      b.classList.remove("is-locked");
+      b.style.top = "";
+      window.scrollTo(0, lockedY);
+    }
+  }
+  const wantsLock = () => panelOpen || !!openId || fbOpen;
+
   /* Overlays are added to the page rather than re-rendered into it. A full
      render() rebuilds every card, so the images and clips reload and the
      grid flashes — which is what "flickering" was. */
@@ -688,14 +701,14 @@
     const app = root.querySelector(".app");
     if (!app || !html) return;
     app.insertAdjacentHTML("beforeend", html);
-    document.body.classList.add("is-locked");
+    setLock(true);
     const box = app.querySelector(".fbpop__box");
     if (box) { box.focus(); box.setSelectionRange(box.value.length, box.value.length); grow(box); }
   }
   function unmountOverlay(sel) {
     const el = root.querySelector(sel);
     if (el) el.remove();
-    document.body.classList.toggle("is-locked", panelOpen || !!openId || fbOpen || menuOpen);
+    setLock(wantsLock());
     refreshFbRow();
   }
   /* the one-line trigger shows what you wrote, so it follows the popup */
@@ -736,19 +749,40 @@
     const vids = root.querySelectorAll("video[data-autoplay]");
     if (!vids.length || stillPlease || !("IntersectionObserver" in window)) return;
     vidWatcher?.disconnect();
+    const cap = isMobile() ? 2 : 6;
+    const onScreen = new Set();
     vidWatcher = new IntersectionObserver((entries) => {
       for (const e of entries) {
-        if (e.isIntersecting) e.target.play?.().catch(() => {});
-        else e.target.pause?.();
+        if (e.isIntersecting) onScreen.add(e.target);
+        else { onScreen.delete(e.target); e.target.pause?.(); }
       }
-    }, { rootMargin: "150px 0px", threshold: 0.2 });
+      /* nearest the middle of the screen wins the budget */
+      const mid = window.innerHeight / 2;
+      [...onScreen]
+        .sort((a, b) => {
+          const ay = a.getBoundingClientRect(), by = b.getBoundingClientRect();
+          return Math.abs(ay.top + ay.height / 2 - mid) - Math.abs(by.top + by.height / 2 - mid);
+        })
+        .forEach((v, n) => { if (n < cap) v.play?.().catch(() => {}); else v.pause?.(); });
+    }, { rootMargin: isMobile() ? "0px" : "150px 0px", threshold: 0.35 });
     vids.forEach((v) => vidWatcher.observe(v));
   }
 
+  /* Only a change of width can change the layout. On a phone the height
+     changes constantly — the URL bar hides as you scroll, the keyboard
+     opens — and re-rendering on that rebuilt every card mid-scroll, which
+     is what the flickering was. */
   let resizeTimer;
+  let lastWidth = window.innerWidth;
   window.addEventListener("resize", () => {
+    if (window.innerWidth === lastWidth) return;
+    lastWidth = window.innerWidth;
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { if (!openId) render(); }, 120);
+    resizeTimer = setTimeout(() => {
+      if (openId || fbOpen) return;
+      if (document.activeElement && document.activeElement.tagName === "TEXTAREA") return;
+      render();
+    }, 160);
   });
 
   /* FLIP the grid when the filter changes: cards that stay glide
@@ -791,7 +825,7 @@
     openId = id;
     stageAlt = false;
     render();
-    const target = root.querySelector(".detail__media > *");
+    const target = root.querySelector(".detail__media img, .detail__media video, .detail__media .ph");
     const overlay = root.querySelector(".detail");
     if (overlay) overlay.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: "ease-out" });
     if (from && target) {
@@ -814,7 +848,7 @@
 
   /* Close: the reverse of opening — the frame flies back to its grid slot. */
   function closeDetail() {
-    const media = root.querySelector(".detail__media > *");
+    const media = root.querySelector(".detail__media img, .detail__media video, .detail__media .ph");
     const id = openId;
     openId = null;
     if (!media) { render(); return; }
@@ -951,9 +985,6 @@
     if (e.target.classList && e.target.classList.contains("fbpop")) {
       fbOpen = false; unmountOverlay(".fbpop"); return;
     }
-    if (e.target.classList && e.target.classList.contains("navmenu")) {
-      menuOpen = false; unmountOverlay(".navmenu"); return;
-    }
     const el = e.target.closest("[data-action]");
     if (el) {
       const [verb, a, b] = el.dataset.action.split(":");
@@ -988,11 +1019,8 @@
         });
         return;
       }
-      if (verb === "menu-open")  { menuOpen = true;  mountOverlay(menuHTML()); return; }
-      if (verb === "menu-close") { menuOpen = false; unmountOverlay(".navmenu"); return; }
       if (verb === "goto") {
         const n = Number(a);
-        menuOpen = false;
         if (walk[n]) {
           selection = { type: "group", laneId: walk[n].lane.id, groupId: walk[n].group.id };
           openId = null; fbOpen = false;
@@ -1070,7 +1098,6 @@
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && fbOpen) { fbOpen = false; unmountOverlay(".fbpop"); return; }
-    if (e.key === "Escape" && menuOpen) { menuOpen = false; unmountOverlay(".navmenu"); return; }
     if (!openId) {
       if (viewMode !== "focus" || showSummary) return;
       if (document.activeElement && /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName)) return;
@@ -1096,7 +1123,7 @@
     if (viewMode === "focus" && selection.type !== "group")
       selection = { type: "group", laneId: walk[0].lane.id, groupId: walk[0].group.id };
     render();
-    STORE.onChange(() => { if (!editingIdea && document.activeElement?.tagName !== "TEXTAREA") render(); });
+    STORE.onChange(() => { if (!editingIdea) applyStoreChanges(); });
     STORE.startPolling(() => !!editingIdea || document.activeElement?.tagName === "TEXTAREA");
   })();
 })();

@@ -183,64 +183,8 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
   overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
 }
 
-.navmenu__btn {
-  flex: 0 0 auto;
-  display: flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px; margin-right: -6px;
-  color: var(--ink-secondary);
-}
-.navmenu__btn:hover { color: var(--ink); }
+@keyframes fbpop-in { from { opacity: 0 } to { opacity: 1 } }
 
-/* the panel: where you are, everywhere else, and the studio's tools */
-.navmenu {
-  position: fixed; inset: 0; z-index: 70;
-  display: flex; justify-content: flex-end;
-  background: rgba(20, 20, 22, 0.34);
-  animation: fbpop-in 160ms ease both;
-}
-.navmenu__card {
-  display: flex; flex-direction: column;
-  width: 340px; max-width: 88vw; height: 100%;
-  background: var(--bg); border-left: 1px solid var(--line);
-  animation: navmenu-in 220ms cubic-bezier(.2,.7,.2,1) both;
-}
-.navmenu__head {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 16px 14px 14px 18px; border-bottom: 1px solid var(--line-soft);
-}
-.navmenu__title { font-size: 14px; font-weight: 500; }
-.navmenu__x {
-  display: flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px; color: var(--ink);
-}
-.navmenu__scroll { flex: 1; overflow-y: auto; padding: 8px 0 16px; }
-.navmenu__lane { padding: 10px 0 6px; }
-.navmenu__lanename {
-  padding: 0 18px 8px;
-  font-size: 11px; letter-spacing: 0.09em; text-transform: uppercase;
-  color: var(--ink-muted);
-}
-.navmenu__item {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  width: 100%; padding: 9px 18px; text-align: left;
-  font-size: 14px; color: var(--ink-secondary);
-}
-.navmenu__item:hover { background: var(--fill); color: var(--ink); }
-.navmenu__item.is-here { color: var(--ink); font-weight: 500; }
-.navmenu__name { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.navmenu__meta {
-  flex: 0 0 auto; display: flex; align-items: center; gap: 7px;
-  font-size: 12px; color: var(--ink-muted); font-variant-numeric: tabular-nums;
-}
-.navmenu__tools {
-  display: flex; flex-wrap: wrap; gap: 4px;
-  padding: 12px 14px calc(16px + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--line-soft);
-}
-@keyframes navmenu-in {
-  from { transform: translateX(24px); opacity: 0 }
-  to { transform: none; opacity: 1 }
-}
 
 /* the title is the way to jump anywhere in the walk */
 .focus__titlerow {
@@ -280,22 +224,23 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
 /* the like: quiet until it is on, and only in the way when you reach for it */
 .card { position: relative; }
 .likebtn {
-  position: absolute; right: 6px; bottom: 6px; z-index: 2;
+  position: absolute; left: 8px; top: 8px; z-index: 2;
   display: flex; align-items: center; justify-content: center;
-  width: 30px; height: 30px;
-  color: #fff; opacity: 0;
+  width: 32px; height: 32px;
+  color: var(--ink); opacity: 0;
+  background: var(--bg); border: 1px solid var(--line);
   transition: opacity 140ms ease, color 140ms ease;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35));
 }
-.card:hover .likebtn, .likebtn:focus-visible { opacity: 0.85; }
-.card:hover .likebtn:hover { opacity: 1; }
+.card:hover .likebtn, .likebtn:focus-visible { opacity: 1; }
 .likebtn.is-on { opacity: 1; color: #E8464F; }
-.likebtn.is-on .likebtn__i { fill: currentColor; }
-.likebtn--stage {
-  position: static; width: 38px; height: 38px; opacity: 1;
-  color: var(--ink); filter: none;
+.likebtn.is-on .likebtn__i path { fill: currentColor; }
+
+.detail__frame {
+  position: relative; display: inline-flex;
+  max-width: 100%; max-height: 100%; min-width: 0;
 }
-.likebtn--stage.is-on { color: #E8464F; }
+/* never over the picture: the close button's twin, on the other side */
+.likebtn--stage { position: static; width: 40px; height: 40px; opacity: 1; }
 
 /* a dot would imply a comment on that frame; here comments are per group */
 .is-focus .card__dot { display: none; }
@@ -304,9 +249,13 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
    the box to answer in. The desktop close lives in the panel this view
    drops, so the pinned one takes over. */
 .is-focus .detail { grid-template-columns: 1fr; }
-.is-focus .detail__bar { display: block; position: sticky; top: 0; height: 0; z-index: 6; }
+.is-focus .detail__bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  position: sticky; top: 0; z-index: 6;
+  padding: 20px; height: auto;
+}
 .is-focus .detail__close--pinned {
-  position: absolute; right: 20px; top: 20px;
+  position: static;
   width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; line-height: 1; color: var(--ink);
@@ -428,7 +377,10 @@ img.ph--stage, video.ph--stage { height: 78vh; width: auto; object-fit: contain;
 /* hidden on desktop */
 .mobilebar { display: none; }
 .navscrim { display: none; }
-body.is-locked { overflow: hidden; }
+body.is-locked {
+  position: fixed; left: 0; right: 0; width: 100%;
+  overflow: hidden; overscroll-behavior: none;
+}
 
 @media (max-width: 1200px) {
   .detail { grid-template-columns: 1fr 340px; }
@@ -444,7 +396,6 @@ body.is-locked { overflow: hidden; }
     background: var(--bg); border-bottom: 1px solid var(--line);
   }
   .mobilebar__logo { width: 34px; height: auto; display: block; }
-  .mobilebar .navmenu__btn { margin-left: 4px; margin-right: -6px; width: 38px; height: 38px; }
 
   /* current view, as information rather than a control */
   .mobilebar__ctx {
@@ -549,7 +500,7 @@ body.is-locked { overflow: hidden; }
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
     background: rgba(20, 20, 22, 0.34);
-    animation: fbpop-in 160ms ease both;
+    animation: fbpop-in 110ms ease both;
   }
   .fbpop__card {
     width: 100%; max-width: 460px;
@@ -557,7 +508,6 @@ body.is-locked { overflow: hidden; }
     padding: 16px 16px 16px;
     background: var(--bg); border: 1px solid var(--line);
     box-shadow: 0 24px 60px rgba(0,0,0,0.22);
-    animation: fbpop-rise 200ms cubic-bezier(.2,.7,.2,1) both;
   }
   .fbpop__head {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -579,11 +529,6 @@ body.is-locked { overflow: hidden; }
     margin-top: 14px; padding: 13px 16px;
     background: var(--ink); color: #fff; font-size: 15px;
   }
-  @keyframes fbpop-in { from { opacity: 0 } to { opacity: 1 } }
-  @keyframes fbpop-rise {
-    from { opacity: 0; transform: translateY(14px) }
-    to { opacity: 1; transform: none }
-  }
   .is-focus .focus__frames { padding-bottom: calc(74px + env(safe-area-inset-bottom)); }
   /* the column's own edge already closes the reading block, so the rule
      under the idea would be the same line drawn twice */
@@ -593,7 +538,8 @@ body.is-locked { overflow: hidden; }
   }
   .grid { gap: 10px; }
   .card { margin-bottom: 10px; }
-  .likebtn { opacity: 0.8; width: 34px; height: 34px; }
+  .likebtn { opacity: 1; width: 32px; height: 32px; }
+  .is-focus .likebtn--stage, .likebtn--stage { width: 44px; height: 44px; }
 
   /* head of the open group: its name, and the way into the feedback
      sheet — directly under the tabs, where the eye lands after choosing */
@@ -661,6 +607,7 @@ body.is-locked { overflow: hidden; }
     padding: calc(56px + env(safe-area-inset-top)) 16px 10px;
   }
   .detail__media { flex: 1; min-height: 0; align-items: center; width: 100%; }
+  .detail__frame { max-height: 100%; }
   img.ph--stage, video.ph--stage {
     height: auto; width: auto;
     max-height: 100%; max-width: 100%;
@@ -683,9 +630,15 @@ body.is-locked { overflow: hidden; }
      makes it the containing block for fixed children — so a fixed close
      button would scroll away with the frame. A zero-height sticky strip
      at the top of the scroller holds it in place instead. */
-  .detail__bar { display: block; position: sticky; top: 0; height: 0; z-index: 6; }
-  .detail__close--pinned {
-    position: absolute; right: 12px; top: calc(10px + env(safe-area-inset-top));
+  /* these have to out-rank the .is-focus rules above, or the two controls
+     end up on different offsets and different sizes */
+  .is-focus .detail__bar, .detail__bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    position: sticky; top: 0; z-index: 6; height: auto;
+    padding: calc(10px + env(safe-area-inset-top)) 12px 10px;
+  }
+  .is-focus .detail__close--pinned, .detail__close--pinned {
+    position: static;
     width: 44px; height: 44px;
     display: flex; align-items: center; justify-content: center;
     font-size: 17px; line-height: 1; color: var(--ink);

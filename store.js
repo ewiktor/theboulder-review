@@ -148,10 +148,10 @@ const STORE = (() => {
       return push(kind, targetId, v);
     },
 
-    /* Feedback only, as flat Markdown. The idea copy is deliberately left
-       out: it is our words, not the client's, and mixing the two makes it
-       hard for a reader — or a model — to tell what is new comment and
-       what was already on the board. One frame, one line. */
+    /* One heading per group, the comment under it. Nothing else: not the
+       idea copy, which is our words rather than the client's, and not the
+       per-frame notes, which the walk-through cannot collect. Flat enough
+       that a reader — or a model — can tell one comment from the next. */
     exportAsFile(project) {
       const fb = mem.feedback || {};
       const L = [`# Feedback — ${project.client}${project.round ? " · " + project.round : ""}`,
@@ -159,12 +159,10 @@ const STORE = (() => {
                  mode === "local" ? "\n> Saved on this device only." : ""];
       let n = 0;
       for (const lane of project.lanes) for (const g of lane.groups) {
-        const gNote = fb[`group:${lane.id}/${g.id}`];
-        const items = g.items.filter((i) => fb[i.id]);
-        if (!gNote && !items.length) continue;
-        L.push("", `## ${lane.name} — ${g.name}`, "");
-        if (gNote) { L.push(`- **The whole group** — ${gNote}`); n++; }
-        for (const it of items) { L.push(`- **${it.title}** — ${fb[it.id]}`); n++; }
+        const note = fb[`group:${lane.id}/${g.id}`];
+        if (!note) continue;
+        L.push("", `## ${lane.name} — ${g.name}`, "", note.trim());
+        n++;
       }
       if (!n) L.push("", "_No feedback written yet._");
       const blob = new Blob([L.join("\n") + "\n"], { type: "text/markdown" });

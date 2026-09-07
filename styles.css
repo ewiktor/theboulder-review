@@ -10,6 +10,7 @@
   --ink:           #000000;
   --ink-secondary: #858A99;
   --ink-muted:     #C2C4CC;
+  --ink-mid:       #626777;   /* reading copy on the walk-through column */
   --blue:          #155DFC;
   --green:         #009966;
 
@@ -148,6 +149,82 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
 
 .sidebar__foot { padding: 16px 20px 0; }
 
+/* ---------- focus mode: one group per screen ----------
+   A reading column on the left — what it is, what we were after, and the
+   box you answer in — with the frames to the right. No nav: this is a walk
+   through the work, not a place to browse from. Measures from the Figma. */
+.is-focus .sidebar { display: none; }
+
+/* .main sets its own padding and scroll further down the file; this view
+   fills the window edge to edge and lets its two columns scroll instead,
+   so the selector has to outrank it. */
+.main.focus {
+  display: grid; grid-template-columns: 320px 1fr;
+  padding: 0; overflow: hidden;
+  height: 100%;
+}
+.focus__side {
+  display: flex; flex-direction: column;
+  padding: 24px 18px 28px;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+}
+.focus__frames { overflow-y: auto; padding: 16px 16px 64px; }
+
+/* the rule runs the width of the column, not the width of the mark */
+.focus__head { padding-bottom: 24px; border-bottom: 1px solid var(--line-soft); }
+.focus__logo { display: block; width: 40px; height: auto; }
+
+/* the title is the way to jump anywhere in the walk */
+.focus__titlerow {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 22px;
+}
+.focus__pick { position: relative; display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.focus__title {
+  font-size: 20px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.1;
+  margin: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.focus__chev { flex: 0 0 auto; color: var(--ink); }
+.focus__pick:hover .focus__chev { color: var(--ink-secondary); }
+.focus__jump {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  opacity: 0; cursor: pointer; font: inherit; border: none; appearance: none;
+}
+
+.focus__idea {
+  margin: 12px 0 0; font-size: 14px; line-height: 1.5; letter-spacing: -0.01em;
+  color: var(--ink-mid);
+  padding-bottom: 22px; border-bottom: 1px solid var(--line-soft);
+}
+.focus .field--idea { margin-top: 14px; font-size: 14px; }
+.focus .fb-label { margin: 24px 0 8px; }   /* the app's own label: 11px, tracked, secondary */
+.focus .field::placeholder { color: var(--ink-muted); }
+
+.focus__pager {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: auto; padding-top: 28px;
+}
+.focus__pager .quiet { padding: 8px 10px; }
+.focus__tools { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+
+/* a dot would imply a comment on that frame; here comments are per group */
+.is-focus .card__dot { display: none; }
+
+/* the frame opens on its own — the idea is already beside it, and so is
+   the box to answer in. The desktop close lives in the panel this view
+   drops, so the pinned one takes over. */
+.is-focus .detail { grid-template-columns: 1fr; }
+.is-focus .detail__bar { display: block; position: sticky; top: 0; height: 0; z-index: 6; }
+.is-focus .detail__close--pinned {
+  position: absolute; right: 20px; top: 20px;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; line-height: 1; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); margin: 0;
+}
+.is-focus .detail__close--pinned:hover { border-color: var(--ink); }
+
 /* ---------- main ---------- */
 .main { flex: 1; overflow-y: auto; padding: 24px 24px 64px 12px; }
 
@@ -235,6 +312,7 @@ img.ph--stage, video.ph--stage { height: 78vh; width: auto; object-fit: contain;
 
 /* feedback summary */
 .sum { max-width: 900px; padding-right: 24px; }
+.sum__back { margin: 0 0 18px -8px; }
 .sum__title { font-size: 26px; font-weight: 500; letter-spacing: -0.01em; }
 .sum__sub { font-size: 13px; color: var(--ink-secondary); margin: 4px 0 28px; }
 .sum__group { margin-bottom: 30px; }
@@ -337,11 +415,25 @@ body.is-locked { overflow: hidden; }
 
   /* --- content --- */
   .main { padding: 8px 12px calc(40px + env(safe-area-inset-bottom)); overflow: visible; }
+  .main.focus { grid-template-columns: 1fr; overflow: visible; height: auto; }
+  .focus__side {
+    padding: 18px 16px 22px; overflow: visible;
+    border-right: none; border-bottom: 1px solid var(--line);
+  }
+  .focus__frames { padding: 16px 16px calc(56px + env(safe-area-inset-bottom)); overflow: visible; }
+  .focus__head { padding-bottom: 18px; }
+  .focus__logo { width: 34px; }
+  .focus__title { font-size: 22px; }
+  .focus__idea, .focus .field--idea { font-size: 16px; }
+  .focus__pager { margin-top: 22px; }
   .grid { gap: 10px; }
   .card { margin-bottom: 10px; }
 
   /* head of the open group: its name, and the way into the feedback
      sheet — directly under the tabs, where the eye lands after choosing */
+  /* focus mode carries its own heading and feedback box, so the mobile
+     group bar and its sheet would be a second, dead route to the same thing */
+  .is-focus .grouphead { display: none; }
   .grouphead {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     padding: 14px 16px 12px;
@@ -390,6 +482,7 @@ body.is-locked { overflow: hidden; }
      the frame is a tall social post or a wide web screen, and the pager
      never moves between frames — but the copy below it is reached by
      scrolling the screen, not a panel inside it. */
+  .is-focus .detail { display: block; }
   .detail {
     display: block;
     overflow-y: auto; -webkit-overflow-scrolling: touch;

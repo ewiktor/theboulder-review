@@ -19,12 +19,23 @@
      the feedback summary. Everyone else reads ideas and writes feedback. */
   const params = new URLSearchParams(location.search);
   const STUDIO = params.get("studio") === (window.DRAPER_CONFIG?.studioKey || "draper");
+
+  /* The walk is the board now. The old masonry view is kept in the code
+     because it may be wanted again, but nothing in the UI leads to it —
+     only ?view=board, which no client will type by accident. */
+  let viewMode = params.get("view") === "board" ? "board" : "focus";
   const feedbackAll = () => STORE.all("feedback");
   const ideaAll = () => STORE.all("idea");
   const ideaFor = (key, fallback) => { const v = STORE.get("idea", key); return v !== "" ? v : (fallback || ""); };
   /* The idea is the line on a frame anyone may write or rewrite. */
   const ideaBlock = (key, fallbackText, cls) => {
     const text = ideaFor(key, fallbackText);
+    /* the idea is our copy — clients read it, we write it */
+    if (!STUDIO) {
+      return text
+        ? `<div class="label label--row">The idea</div><p class="${cls}">${esc(text)}</p>`
+        : "";
+    }
     if (editingIdea === key) {
       return `
         <div class="label label--row">The idea
@@ -48,6 +59,13 @@
   for (const lane of P.lanes)
     for (const group of lane.groups)
       for (const item of group.items) flat.push({ item, group, lane });
+
+  /* every group on the board, in board order — the spine of focus mode */
+  const walk = [];
+  for (const lane of P.lanes)
+    for (const group of lane.groups) walk.push({ lane, group });
+  const walkIndex = () => walk.findIndex((w) =>
+    w.lane.id === selection.laneId && w.group.id === selection.groupId);
 
   const itemById = (id) => flat.find((r) => r.item.id === id)?.item || null;
   /* A frame that exists as both motion and still carries a pointer to its
@@ -248,7 +266,7 @@
         <nav class="nav">${html}</nav>
         <div class="sidebar__foot">
           ${STUDIO ? `<button class="quiet ${showSummary ? "is-on" : ""}" data-action="summary">${showSummary ? "← Back to frames" : "Feedback summary"}</button>` : ""}
-          <button class="quiet" data-action="export">Export feedback</button>
+          ${STUDIO ? `<button class="quiet" data-action="export">Export feedback</button>` : ""}
         </div>
       </aside>`;
   }
@@ -259,11 +277,19 @@
     /* on mobile the nav is a drawer and the group panel stacks, so the
        grid gets the full width; column target shrinks with the screen. */
     const side  = mob ? 0 : navCollapsed ? 56 : 216;
-    const panel = (!mob && selection.type === "group") ? 360 : 0;
+    const panel = (!mob && viewMode === "board" && selection.type === "group") ? 360 : 0;
     const pad   = mob ? 24 : 36;
     const target = vw < 600 ? 150 : vw < 900 ? 220 : 320;
     const w = Math.max(260, vw - side - panel - pad);
     const gap = 14;
+    /* focus mode reads in a single column of fixed measure, so the grid is
+       bounded by that column rather than by the window */
+    if (viewMode === "focus") {
+      /* no sidebar in this view; the reading column takes 380 of the width */
+      const col = mob ? vw - 32 : vw - 380 - 96;
+      return Math.max(1, Math.min(visible().length,
+        Math.floor((Math.max(240, col) + gap) / (target + gap))));
+    }
     const maxCols = Math.max(1, Math.floor((w + gap) / (target + gap)));
     const minCols = Math.max(1, Math.ceil(w / 720));
     let n = Math.min(visible().length, maxCols);
@@ -323,14 +349,12 @@
     return `<div class="mobilefoot">
         <div class="mobilefoot__acts">
           ${STUDIO ? `<button class="quiet" data-action="summary">${showSummary ? "Back to frames" : "Feedback summary"}</button>` : ""}
-          <button class="quiet" data-action="export">Export feedback</button>
+          ${STUDIO ? `<button class="quiet" data-action="export">Export feedback</button>` : ""}
         </div>
       </div>`;
   }
 
-  function mainHTML() {
-    const rows = visible();
-    const n = gridColumnCount();
+  function gridHTML(rows, n) {
     const cols = Array.from({ length: n }, () => ({ h: 0, html: "" }));
     for (const { item } of rows) {
       const col = cols.reduce((a, b) => (b.h < a.h ? b : a));
@@ -341,8 +365,66 @@
       </button>`;
       col.h += item.h / item.w;
     }
-    const grid = cols.map((c) => `<div class="grid__col">${c.html}</div>`).join("");
-    return `<main class="main"><div class="grid">${grid}</div></main>`;
+    return `<div class="grid">${cols.map((c) => `<div class="grid__col">${c.html}</div>`).join("")}</div>`;
+  }
+
+  function mainHTML() {
+    return `<main class="main">${gridHTML(visible(), gridColumnCount())}</main>`;
+  }
+
+  /* One group per screen. Everything you need to judge a direction sits in
+     a column on the left — what it is, what we were after, and the box you
+     answer in — with the frames themselves to the right. No nav: this view
+     is a walk, not a place to browse from. */
+  function focusHTML() {
+    const i = walkIndex();
+    if (i < 0) return `<main class="main focus"></main>`;
+    const { lane, group } = walk[i];
+    const gKey = groupKey(lane.id, group.id);
+    const text = ideaFor(gKey, group.idea);
+    const editing = editingIdea === gKey;
+    return `
+      <main class="main focus">
+        <aside class="focus__side">
+          <div class="focus__head"><img class="focus__logo" src="draperlogo.svg" alt="DRAPER"></div>
+          <div class="focus__titlerow">
+            <span class="focus__pick">
+              <h1 class="focus__title">${esc(group.name)}</h1>
+              <svg class="focus__chev" viewBox="0 0 16 16" width="18" height="18" fill="none"
+                   stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 6.5 8 3.5l3 3"></path><path d="M5 9.5 8 12.5l3-3"></path>
+              </svg>
+              <select class="focus__jump" data-jump aria-label="Jump to a group">
+                ${P.lanes.map((l) => `<optgroup label="${esc(l.name)}">${
+                  l.groups.map((g) => {
+                    const n = walk.findIndex((w) => w.lane.id === l.id && w.group.id === g.id);
+                    return `<option value="${n}" ${n === i ? "selected" : ""}>${esc(g.name)} (${g.items.length})</option>`;
+                  }).join("")}</optgroup>`).join("")}
+              </select>
+            </span>
+            ${STUDIO ? `<button class="editbtn ${editing ? "editbtn--on" : ""}"
+                    data-action="${editing ? "save-idea" : "edit-idea"}:${gKey}">${
+              editing ? "Save" : text ? "Edit" : "Add"}</button>` : ""}
+          </div>
+          ${editing && STUDIO
+            ? `<textarea class="field field--idea" rows="5" data-idea-save="${gKey}"
+                        placeholder="What this group is exploring…">${esc(text)}</textarea>`
+            : `<p class="focus__idea${text ? "" : " idea-empty"}">${esc(text || "Not written yet.")}</p>`}
+          <div class="label fb-label">Your feedback</div>
+          <textarea class="field" rows="6" placeholder="Type here…"
+                    data-save="${gKey}">${esc(STORE.get("feedback", gKey) || "")}</textarea>
+          <div class="focus__pager">
+            <button class="quiet" data-action="walk:-1" ${i === 0 ? "disabled" : ""}>← Prev</button>
+            <button class="quiet" data-action="walk:1" ${i === walk.length - 1 ? "disabled" : ""}>Next →</button>
+          </div>
+          ${STUDIO ? `
+          <div class="focus__tools">
+            <button class="quiet quiet--tiny" data-action="summary">Feedback summary</button>
+            <button class="quiet quiet--tiny" data-action="export">Export feedback</button>
+          </div>` : ""}
+        </aside>
+        <div class="focus__frames">${gridHTML(visible(), gridColumnCount())}</div>
+      </main>`;
   }
 
   /* Side panel for a selected group: the thinking behind the direction,
@@ -402,6 +484,7 @@
             <button class="quiet" data-action="next" ${rows.length < 2 ? "disabled" : ""}>Next →</button>
           </div>
         </div>
+        ${viewMode === "focus" ? "" : `
         <aside class="detail__panel">
           <div class="detail__panel-in">
             <button class="detail__close" data-action="close" aria-label="Close">✕</button>
@@ -411,13 +494,14 @@
             <textarea class="field" rows="4" placeholder="${PROMPT}"
                       data-save="${item.id}">${esc(STORE.get("feedback", item.id) || "")}</textarea>
           </div>
-        </aside>
+        </aside>`}
       </div>`;
   }
 
   /* Every piece of feedback in one place — what the team reads. */
   function summaryHTML() {
     const fb = feedbackAll();
+    const back = `<button class="quiet sum__back" data-action="summary">← Back to the work</button>`;
     const rows = [];
     for (const lane of P.lanes) for (const g of lane.groups) {
       const gKey = groupKey(lane.id, g.id);
@@ -439,6 +523,7 @@
     const count = Object.keys(fb).length;
     return `<main class="main">
       <div class="sum">
+        ${back}
         <div class="sum__title">Feedback summary</div>
         <div class="sum__sub">${count} ${count === 1 ? "entry" : "entries"} · ${esc(P.client)}</div>
         ${rows.length ? rows.join("") : `<p class="idea-empty">No feedback yet.</p>`}
@@ -454,7 +539,7 @@
       : selection.type === "lane" ? P.lanes.find(l=>l.id===selection.laneId).name
       : P.lanes.find(l=>l.id===selection.laneId).groups.find(g=>g.id===selection.groupId).name;
     root.innerHTML = `
-      <div class="app${panelOpen ? " panel-open" : ""}${navCollapsed ? " nav-collapsed" : ""}">
+      <div class="app${panelOpen ? " panel-open" : ""}${navCollapsed ? " nav-collapsed" : ""}${viewMode === "focus" ? " is-focus" : ""}">
         <header class="mobilebar">
           <img class="mobilebar__logo" src="draperlogo.svg" alt="DRAPER">
           <span class="mobilebar__ctx">${esc(P.client)}</span>
@@ -463,8 +548,8 @@
         ${groupHeadHTML()}
         <div class="panelscrim" data-action="panel-close"></div>
         ${sidebarHTML()}
-        ${showSummary ? summaryHTML() : mainHTML()}
-        ${showSummary ? "" : groupPanelHTML()}
+        ${showSummary ? summaryHTML() : viewMode === "focus" ? focusHTML() : mainHTML()}
+        ${showSummary || viewMode === "focus" ? "" : groupPanelHTML()}
         ${openId ? detailHTML() : ""}
         ${mobileFootHTML()}
       </div>`;
@@ -684,6 +769,16 @@
   /* Brand switch (studio only): reload the board on the chosen manifest,
      keeping the studio key so we do not drop out of studio mode. */
   root.addEventListener("change", (e) => {
+    const jump = e.target.closest("[data-jump]");
+    if (jump) {
+      const w = walk[Number(jump.value)];
+      if (w) {
+        selection = { type: "group", laneId: w.lane.id, groupId: w.group.id };
+        openId = null; render();
+        const f = root.querySelector(".focus__frames"); if (f) f.scrollTop = 0;
+      }
+      return;
+    }
     const sel = e.target.closest("[data-brand]");
     if (!sel || sel.value === P.folder) return;
     const q = new URLSearchParams(location.search);
@@ -708,10 +803,28 @@
         localStorage.setItem("draper-review:nav", navCollapsed ? "collapsed" : "open");
         render(); return;
       }
+      if (verb === "viewmode") {
+        viewMode = viewMode === "focus" ? "board" : "focus";
+        localStorage.setItem("draper-review:view", viewMode);
+        openId = null; showSummary = false; panelOpen = false;
+        /* focus mode is always sitting on some group — land on the first */
+        if (viewMode === "focus" && selection.type !== "group")
+          selection = { type: "group", laneId: walk[0].lane.id, groupId: walk[0].group.id };
+        render(); return;
+      }
+      if (verb === "walk") {
+        const i = walkIndex() + Number(a);
+        if (i < 0 || i >= walk.length) return;
+        selection = { type: "group", laneId: walk[i].lane.id, groupId: walk[i].group.id };
+        openId = null;
+        render();
+        const m = root.querySelector(".main"); if (m) m.scrollTop = 0;
+        return;
+      }
       if (verb === "panel-toggle") { panelOpen = !panelOpen; render(); return; }
       if (verb === "panel-close")  { panelOpen = false; render(); return; }
-      if (verb === "select-all")   { selection = { type: "all" }; openId = null; if (isMobile()) panelOpen = false; rerenderGrid(); }
-      if (verb === "select-lane")  { selection = { type: "lane", laneId: a }; openId = null; if (isMobile()) panelOpen = false; rerenderGrid(); }
+      if (verb === "select-all")   { selection = { type: "all" }; viewMode = "board"; openId = null; if (isMobile()) panelOpen = false; rerenderGrid(); }
+      if (verb === "select-lane")  { selection = { type: "lane", laneId: a }; viewMode = "board"; openId = null; if (isMobile()) panelOpen = false; rerenderGrid(); }
       if (verb === "select-group") { selection = { type: "group", laneId: a, groupId: b }; openId = null; if (isMobile()) panelOpen = false; rerenderGrid(); }
       if (verb === "stage") {
         /* the opened frame stays the one being commented on — this only
@@ -771,7 +884,18 @@
   }, { passive: true });
 
   window.addEventListener("keydown", (e) => {
-    if (!openId) return;
+    if (!openId) {
+      if (viewMode !== "focus" || showSummary) return;
+      if (document.activeElement && /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName)) return;
+      const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      const i = walkIndex() + d;
+      if (i < 0 || i >= walk.length) return;
+      selection = { type: "group", laneId: walk[i].lane.id, groupId: walk[i].group.id };
+      render();
+      const f = root.querySelector(".focus__frames"); if (f) f.scrollTop = 0;
+      return;
+    }
     if (e.key === "Escape") { closeDetail(); return; }
     if (document.activeElement && document.activeElement.tagName === "TEXTAREA") return;
     if (e.key === "ArrowRight") step(1);
@@ -781,6 +905,10 @@
   /* boot */
   (async () => {
     await STORE.boot(P);
+    /* focus mode is remembered, but the selection is not — land on the
+       first group rather than on an empty page */
+    if (viewMode === "focus" && selection.type !== "group")
+      selection = { type: "group", laneId: walk[0].lane.id, groupId: walk[0].group.id };
     render();
     STORE.onChange(() => { if (!editingIdea && document.activeElement?.tagName !== "TEXTAREA") render(); });
     STORE.startPolling(() => !!editingIdea || document.activeElement?.tagName === "TEXTAREA");

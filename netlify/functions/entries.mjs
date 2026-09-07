@@ -51,7 +51,7 @@ export default async (req) => {
     try { row = await req.json(); } catch { return json({ error: "bad json" }, 400); }
     const { kind, target_id, body } = row || {};
     if (!kind || !target_id) return json({ error: "kind and target_id required" }, 400);
-    if (!["feedback", "idea"].includes(kind)) return json({ error: "unknown kind" }, 400);
+    if (!["feedback", "idea", "reaction"].includes(kind)) return json({ error: "unknown kind" }, 400);
 
     const key = `${project}/${kind}/${encodeURIComponent(target_id)}`;
     /* an emptied field is a deletion, so it does not linger in the export */

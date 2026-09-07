@@ -11,6 +11,8 @@
   let stageAlt = false;     // detail view: showing the twin rather than the opened frame
   let showSummary = false;
   let panelOpen = false;    // mobile: group idea/feedback sheet
+  let fbOpen = false;       // mobile: the feedback popup over the walk
+  let menuOpen = false;     // the one navigation panel, opened from the bar
   let navCollapsed = localStorage.getItem("draper-review:nav") === "collapsed";
 
   const isMobile = () => window.innerWidth < 900;
@@ -344,25 +346,31 @@
       </div>`;
   }
 
-  /* Utility controls sit at the foot of the page on mobile, in the open. */
-  function mobileFootHTML() {
-    return `<div class="mobilefoot">
-        <div class="mobilefoot__acts">
-          ${STUDIO ? `<button class="quiet" data-action="summary">${showSummary ? "Back to frames" : "Feedback summary"}</button>` : ""}
-          ${STUDIO ? `<button class="quiet" data-action="export">Export feedback</button>` : ""}
-        </div>
-      </div>`;
-  }
+  /* The menu holds the studio's tools on every screen now, so the page
+     needs no foot of its own. */
+  function mobileFootHTML() { return ""; }
+
+  /* A like is the shortest thing a reader can say. Shared and unsigned,
+     like everything else here: one mark on the frame, not a tally. */
+  const liked = (id) => STORE.get("reaction", id) === "1";
+  const HEART = `<svg class="likebtn__i" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+      <path d="M10 16.4S3.4 12.3 3.4 7.9A3.6 3.6 0 0 1 10 5.9a3.6 3.6 0 0 1 6.6 2c0 4.4-6.6 8.5-6.6 8.5z"
+            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>`;
+  const likeHTML = (id, cls = "") => `
+    <button class="likebtn ${cls}${liked(id) ? " is-on" : ""}" data-action="like:${id}"
+            data-likeslot="${id}" aria-pressed="${liked(id)}" aria-label="Like this frame">${HEART}</button>`;
 
   function gridHTML(rows, n) {
     const cols = Array.from({ length: n }, () => ({ h: 0, html: "" }));
     for (const { item } of rows) {
       const col = cols.reduce((a, b) => (b.h < a.h ? b : a));
       col.html += `
-      <button class="card" data-action="open:${item.id}" data-id="${item.id}">
+      <div class="card" role="button" tabindex="0" data-action="open:${item.id}" data-id="${item.id}">
         ${media(item)}
         <span class="card__dot" data-dotslot="${item.id}">${STORE.get("feedback", item.id) ? '<i class="dot dot--blue"></i>' : ""}</span>
-      </button>`;
+        ${likeHTML(item.id)}
+      </div>`;
       col.h += item.h / item.w;
     }
     return `<div class="grid">${cols.map((c) => `<div class="grid__col">${c.html}</div>`).join("")}</div>`;
@@ -383,10 +391,25 @@
     const gKey = groupKey(lane.id, group.id);
     const text = ideaFor(gKey, group.idea);
     const editing = editingIdea === gKey;
+    /* On a phone the open box pushed the work off the first screen. The
+       reading order is the fix: the group, then the frames, then the box
+       you write in once you have actually looked at them. */
+    const mob = isMobile();
+    const fbText = (STORE.get("feedback", gKey) || "").trim();
+    const wrote = !!fbText;
+    const written = wrote ? (fbText.length > 68 ? `${fbText.slice(0, 68)}…` : fbText) : "";
+    const fbBox = `<textarea class="field" rows="6" placeholder="Type here…"
+                    data-save="${gKey}" data-grow>${esc(STORE.get("feedback", gKey) || "")}</textarea>`;
     return `
       <main class="main focus">
         <aside class="focus__side">
-          <div class="focus__head"><img class="focus__logo" src="draperlogo.svg" alt="DRAPER"></div>
+          <div class="focus__head">
+            <span class="focus__brand">
+              <img class="focus__logo" src="draperlogo.svg" alt="DRAPER">
+              <span class="focus__word">${esc(P.client)}</span>
+            </span>
+            ${MENU_BTN}
+          </div>
           <div class="focus__titlerow">
             <span class="focus__pick">
               <h1 class="focus__title">${esc(group.name)}</h1>
@@ -410,21 +433,100 @@
             ? `<textarea class="field field--idea" rows="5" data-idea-save="${gKey}"
                         placeholder="What this group is exploring…">${esc(text)}</textarea>`
             : `<p class="focus__idea${text ? "" : " idea-empty"}">${esc(text || "Not written yet.")}</p>`}
+          ${mob ? `
+          <button class="fbrow${written ? " fbrow--on" : ""}" data-action="fb-open" data-key="${gKey}">
+            <span class="fbrow__text">${written ? esc(written) : "Add your feedback…"}</span>
+          </button>` : `
           <div class="label fb-label">Your feedback</div>
-          <textarea class="field" rows="6" placeholder="Type here…"
-                    data-save="${gKey}">${esc(STORE.get("feedback", gKey) || "")}</textarea>
+          ${fbBox}`}
           <div class="focus__pager">
             <button class="quiet" data-action="walk:-1" ${i === 0 ? "disabled" : ""}>← Prev</button>
             <button class="quiet" data-action="walk:1" ${i === walk.length - 1 ? "disabled" : ""}>Next →</button>
           </div>
-          ${STUDIO ? `
-          <div class="focus__tools">
-            <button class="quiet quiet--tiny" data-action="summary">Feedback summary</button>
-            <button class="quiet quiet--tiny" data-action="export">Export feedback</button>
-          </div>` : ""}
         </aside>
         <div class="focus__frames">${gridHTML(visible(), gridColumnCount())}</div>
+        ${mob && fbOpen ? `
+        <div class="fbpop">
+          <div class="fbpop__card">
+            <div class="fbpop__head">
+              <span class="fbpop__where">${esc(lane.name)} · ${esc(group.name)}</span>
+              <button class="fbpop__x" data-action="fb-close" aria-label="Close">
+                <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+              </button>
+            </div>
+            <div class="label fb-label">Your feedback</div>
+            <textarea class="field fbpop__box" rows="5" placeholder="Type here…"
+                      data-save="${gKey}" data-grow>${esc(fbText)}</textarea>
+            <button class="fbpop__done" data-action="fb-close">Done</button>
+          </div>
+        </div>` : ""}
       </main>`;
+  }
+
+
+  /* One way into everything: where you are in the walk, every other group,
+     and the studio's own tools. It replaces the nav that used to be a
+     sidebar on one screen and two rows of tabs on the other. */
+  const MENU_BTN = `<button class="navmenu__btn" data-action="menu-open" aria-label="Menu">
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M3 6h14"></path><path d="M3 10h14"></path><path d="M3 14h14"></path>
+      </svg>
+    </button>`;
+
+  function menuHTML() {
+    if (!menuOpen) return "";
+    const here = walkIndex();
+    const lanes = P.lanes.map((l) => {
+      const rows = l.groups.map((g) => {
+        const n = walk.findIndex((w) => w.lane.id === l.id && w.group.id === g.id);
+        const done = !!STORE.get("feedback", groupKey(l.id, g.id));
+        return `<button class="navmenu__item${n === here ? " is-here" : ""}" data-action="goto:${n}">
+            <span class="navmenu__name">${esc(g.name)}</span>
+            <span class="navmenu__meta">${done ? '<i class="dot dot--blue"></i>' : ""}${g.items.length}</span>
+          </button>`;
+      }).join("");
+      return `<div class="navmenu__lane"><div class="navmenu__lanename">${esc(l.name)}</div>${rows}</div>`;
+    }).join("");
+    return `
+      <div class="navmenu">
+        <div class="navmenu__card">
+          <div class="navmenu__head">
+            <span class="navmenu__title">${esc(P.client)}</span>
+            <button class="navmenu__x" data-action="menu-close" aria-label="Close">
+              <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            </button>
+          </div>
+          <div class="navmenu__scroll">${lanes}</div>
+          ${STUDIO ? `
+          <div class="navmenu__tools">
+            <button class="quiet quiet--tiny" data-action="summary">Feedback summary</button>
+            <button class="quiet quiet--tiny" data-action="export">Export feedback</button>
+            ${canSwitchBrand ? brandBoxHTML() : ""}
+          </div>` : ""}
+        </div>
+      </div>`;
+  }
+
+  /* Writing feedback happens over the work, not in a box parked under it. */
+  function fbPopHTML() {
+    const i = walkIndex();
+    if (i < 0) return "";
+    const { lane, group } = walk[i];
+    const gKey = groupKey(lane.id, group.id);
+    return `
+      <div class="fbpop">
+        <div class="fbpop__card">
+          <div class="fbpop__head">
+            <span class="fbpop__where">${esc(lane.name)} · ${esc(group.name)}</span>
+            <button class="fbpop__x" data-action="fb-close" aria-label="Close">
+              <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            </button>
+          </div>
+          <textarea class="field fbpop__box" rows="5" placeholder="Type here…"
+                    data-save="${gKey}" data-grow>${esc(STORE.get("feedback", gKey) || "")}</textarea>
+          <button class="fbpop__done" data-action="fb-close">Done</button>
+        </div>
+      </div>`;
   }
 
   /* Side panel for a selected group: the thinking behind the direction,
@@ -474,6 +576,7 @@
       <div class="detail" data-overlay>
         <div class="detail__bar">
           <button class="detail__close detail__close--pinned" data-action="close" aria-label="Close">✕</button>
+          ${likeHTML(item.id, "likebtn--stage")}
         </div>
         <div class="detail__stage">
           <div class="detail__media">${media(shown, "ph--stage", true)}</div>
@@ -543,6 +646,7 @@
         <header class="mobilebar">
           <img class="mobilebar__logo" src="draperlogo.svg" alt="DRAPER">
           <span class="mobilebar__ctx">${esc(P.client)}</span>
+          ${MENU_BTN}
         </header>
         ${tabsHTML()}
         ${groupHeadHTML()}
@@ -557,7 +661,7 @@
     if (main) main.scrollTop = keepScroll;
     const nav = root.querySelector(".sidebar");
     if (nav) nav.scrollTop = keepNavScroll;
-    document.body.classList.toggle("is-locked", panelOpen || !!openId);
+    document.body.classList.toggle("is-locked", panelOpen || !!openId || fbOpen || menuOpen);
     root.querySelectorAll(".tabs__row").forEach((row) => {
       const on = row.querySelector(".chip.is-active");
       if (on) row.scrollLeft = Math.max(0, on.offsetLeft - row.clientWidth / 2 + on.offsetWidth / 2);
@@ -565,6 +669,54 @@
     if (openId) upgradeFull();
     wireVideos();
     measureBar();
+    root.querySelectorAll("textarea[data-grow]").forEach(grow);
+    if (menuOpen) mountOverlay(menuHTML());
+    if (fbOpen) mountOverlay(fbPopHTML());
+  }
+
+  /* A box the size of what is in it — small when empty, never scrolling
+     inside itself once you are writing. */
+  function grow(ta) {
+    ta.style.height = "auto";
+    ta.style.height = `${Math.max(ta.scrollHeight, 0)}px`;
+  }
+
+  /* Overlays are added to the page rather than re-rendered into it. A full
+     render() rebuilds every card, so the images and clips reload and the
+     grid flashes — which is what "flickering" was. */
+  function mountOverlay(html) {
+    const app = root.querySelector(".app");
+    if (!app || !html) return;
+    app.insertAdjacentHTML("beforeend", html);
+    document.body.classList.add("is-locked");
+    const box = app.querySelector(".fbpop__box");
+    if (box) { box.focus(); box.setSelectionRange(box.value.length, box.value.length); grow(box); }
+  }
+  function unmountOverlay(sel) {
+    const el = root.querySelector(sel);
+    if (el) el.remove();
+    document.body.classList.toggle("is-locked", panelOpen || !!openId || fbOpen || menuOpen);
+    refreshFbRow();
+  }
+  /* the one-line trigger shows what you wrote, so it follows the popup */
+  function refreshFbRow() {
+    const row = root.querySelector(".fbrow");
+    if (!row) return;
+    const key = row.dataset.key;
+    const text = (STORE.get("feedback", key) || "").trim();
+    row.classList.toggle("fbrow--on", !!text);
+    row.querySelector(".fbrow__text").textContent =
+      text ? (text.length > 68 ? `${text.slice(0, 68)}…` : text) : "Add your feedback…";
+  }
+
+  /* Landing on a group means starting at its top. On desktop the two
+     columns scroll themselves; on mobile the window does. */
+  function toTopOfGroup() {
+    for (const sel of [".focus__frames", ".focus__side", ".main"]) {
+      const el = root.querySelector(sel);
+      if (el) el.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
   }
 
   /* The filter tabs stick directly under the top bar. Its height depends on
@@ -752,6 +904,7 @@
     if (e.target.closest("textarea[data-idea-save]")) return;
     const ta = e.target.closest("textarea[data-save]");
     if (!ta) return;
+    if (ta.hasAttribute("data-grow")) grow(ta);
     const id = ta.dataset.save;
     clearTimeout(timers[id]);
     timers[id] = setTimeout(() => save(id, ta.value, { flash: false }), 600);
@@ -774,8 +927,7 @@
       const w = walk[Number(jump.value)];
       if (w) {
         selection = { type: "group", laneId: w.lane.id, groupId: w.group.id };
-        openId = null; render();
-        const f = root.querySelector(".focus__frames"); if (f) f.scrollTop = 0;
+        openId = null; panelOpen = false; fbOpen = false; render(); toTopOfGroup();
       }
       return;
     }
@@ -795,6 +947,13 @@
 
   /* ---------- clicks ---------- */
   root.addEventListener("click", (e) => {
+    /* the dark ground closes the popup; the card itself never does */
+    if (e.target.classList && e.target.classList.contains("fbpop")) {
+      fbOpen = false; unmountOverlay(".fbpop"); return;
+    }
+    if (e.target.classList && e.target.classList.contains("navmenu")) {
+      menuOpen = false; unmountOverlay(".navmenu"); return;
+    }
     const el = e.target.closest("[data-action]");
     if (el) {
       const [verb, a, b] = el.dataset.action.split(":");
@@ -816,11 +975,32 @@
         const i = walkIndex() + Number(a);
         if (i < 0 || i >= walk.length) return;
         selection = { type: "group", laneId: walk[i].lane.id, groupId: walk[i].group.id };
-        openId = null;
-        render();
-        const m = root.querySelector(".main"); if (m) m.scrollTop = 0;
+        openId = null; panelOpen = false; fbOpen = false;
+        render(); toTopOfGroup();
         return;
       }
+      if (verb === "like") {
+        const on = !liked(a);
+        STORE.set("reaction", a, on ? "1" : "");
+        root.querySelectorAll(`[data-likeslot="${CSS.escape(a)}"]`).forEach((b) => {
+          b.classList.toggle("is-on", on);
+          b.setAttribute("aria-pressed", String(on));
+        });
+        return;
+      }
+      if (verb === "menu-open")  { menuOpen = true;  mountOverlay(menuHTML()); return; }
+      if (verb === "menu-close") { menuOpen = false; unmountOverlay(".navmenu"); return; }
+      if (verb === "goto") {
+        const n = Number(a);
+        menuOpen = false;
+        if (walk[n]) {
+          selection = { type: "group", laneId: walk[n].lane.id, groupId: walk[n].group.id };
+          openId = null; fbOpen = false;
+        }
+        render(); toTopOfGroup(); return;
+      }
+      if (verb === "fb-open")  { fbOpen = true;  mountOverlay(fbPopHTML()); return; }
+      if (verb === "fb-close") { fbOpen = false; unmountOverlay(".fbpop"); return; }
       if (verb === "panel-toggle") { panelOpen = !panelOpen; render(); return; }
       if (verb === "panel-close")  { panelOpen = false; render(); return; }
       if (verb === "select-all")   { selection = { type: "all" }; viewMode = "board"; openId = null; if (isMobile()) panelOpen = false; rerenderGrid(); }
@@ -883,7 +1063,14 @@
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.6) step(dx < 0 ? 1 : -1);
   }, { passive: true });
 
+  root.addEventListener("keydown", (e) => {
+    const card = e.target.closest && e.target.closest(".card");
+    if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); card.click(); }
+  });
+
   window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && fbOpen) { fbOpen = false; unmountOverlay(".fbpop"); return; }
+    if (e.key === "Escape" && menuOpen) { menuOpen = false; unmountOverlay(".navmenu"); return; }
     if (!openId) {
       if (viewMode !== "focus" || showSummary) return;
       if (document.activeElement && /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName)) return;
@@ -892,8 +1079,7 @@
       const i = walkIndex() + d;
       if (i < 0 || i >= walk.length) return;
       selection = { type: "group", laneId: walk[i].lane.id, groupId: walk[i].group.id };
-      render();
-      const f = root.querySelector(".focus__frames"); if (f) f.scrollTop = 0;
+      render(); toTopOfGroup();
       return;
     }
     if (e.key === "Escape") { closeDetail(); return; }

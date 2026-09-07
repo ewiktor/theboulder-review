@@ -21,7 +21,7 @@ const STORE = (() => {
   const live = () => mode !== "local";
 
   let projectId = null;
-  let mem  = { feedback: {}, idea: {} };   // kind -> targetId -> body
+  let mem  = { feedback: {}, idea: {}, reaction: {} };  // kind -> targetId -> body
   let meta = {};                           // kind|targetId -> {updated_at}
   let status = "connecting";
   let listeners = [];
@@ -56,7 +56,7 @@ const STORE = (() => {
     if (r.status === 404 || r.status === 405) { mode = "local"; status = "local"; return false; }
     if (!r.ok) throw new Error("pull " + r.status);
     const rows = await r.json();
-    const next = { feedback:{}, idea:{} }, nextMeta = {};
+    const next = { feedback:{}, idea:{}, reaction:{} }, nextMeta = {};
     for (const row of rows) {
       if (!next[row.kind]) next[row.kind] = {};
       next[row.kind][row.target_id] = row.body;
@@ -154,14 +154,18 @@ const STORE = (() => {
        that a reader — or a model — can tell one comment from the next. */
     exportAsFile(project) {
       const fb = mem.feedback || {};
+      const likes = mem.reaction || {};
       const L = [`# Feedback — ${project.client}${project.round ? " · " + project.round : ""}`,
                  `_Exported ${new Date().toLocaleString()}_`,
                  mode === "local" ? "\n> Saved on this device only." : ""];
       let n = 0;
       for (const lane of project.lanes) for (const g of lane.groups) {
         const note = fb[`group:${lane.id}/${g.id}`];
-        if (!note) continue;
-        L.push("", `## ${lane.name} — ${g.name}`, "", note.trim());
+        const hearts = g.items.filter((it) => likes[it.id] === "1").map((it) => it.title);
+        if (!note && !hearts.length) continue;
+        L.push("", `## ${lane.name} — ${g.name}`, "");
+        if (hearts.length) L.push(`Liked: ${hearts.join(", ")}`, "");
+        if (note) L.push(note.trim());
         n++;
       }
       if (!n) L.push("", "_No feedback written yet._");

@@ -240,7 +240,13 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
   max-width: 100%; max-height: 100%; min-width: 0;
 }
 /* never over the picture: the close button's twin, on the other side */
-.likebtn--stage { position: static; width: 40px; height: 40px; opacity: 1; }
+.likebtn--stage {
+  position: static; opacity: 1;
+  width: auto; height: auto; padding: 6px 11px;
+  color: var(--ink-secondary);
+}
+.likebtn--stage:hover { color: var(--ink); border-color: var(--ink); }
+.likebtn--stage.is-on { color: #E8464F; border-color: var(--line); }
 
 /* a dot would imply a comment on that frame; here comments are per group */
 .is-focus .card__dot { display: none; }
@@ -248,9 +254,9 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
 /* the frame opens on its own — the idea is already beside it, and so is
    the box to answer in. The desktop close lives in the panel this view
    drops, so the pinned one takes over. */
-.is-focus .detail { grid-template-columns: 1fr; }
+.is-focus .detail { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
 .is-focus .detail__bar {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  display: flex; align-items: center; justify-content: flex-end;
   position: sticky; top: 0; z-index: 6;
   padding: 20px; height: auto;
 }
@@ -305,8 +311,11 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
 }
 .detail {
   position: fixed; inset: 0; z-index: 40;
-  display: grid; grid-template-columns: 1fr 400px;
+  display: grid; grid-template-columns: 1fr 400px; grid-template-rows: 1fr auto;
 }
+.detail__stage { grid-column: 1; }
+.detail__pager { grid-column: 1; justify-content: center; padding: 0 40px 34px; }
+.detail__panel { grid-column: 2; grid-row: 1 / -1; }
 .detail__panel { background: var(--bg); }
 .detail__bar { display: none; }
 .detail__close {
@@ -317,16 +326,30 @@ button { cursor: pointer; background: none; border: none; padding: 0; }
 }
 .detail__close:hover { color: var(--ink); background: var(--fill); }
 
+/* the frame takes the room the row gives it — with the pager now a row of
+   its own, a fixed 78vh frame pushed the pager off the bottom */
 .detail__stage {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 20px; padding: 40px; min-width: 0;
+  gap: 20px; padding: 40px; min-width: 0; min-height: 0;
 }
-.detail__media { max-width: 100%; display: flex; justify-content: center; }
-.ph--stage { height: 78vh; width: auto; max-width: 100%; }
-img.ph--stage, video.ph--stage { height: 78vh; width: auto; object-fit: contain; }
+.detail__media {
+  flex: 1; min-height: 0; width: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.ph--stage { max-height: 100%; max-width: 100%; }
+img.ph--stage, video.ph--stage {
+  height: auto; width: auto;
+  max-height: 100%; max-width: 100%; object-fit: contain;
+}
+div.ph--stage { height: 100%; width: auto; }
 
 /* switch the stage between a frame's motion and still versions */
-.stageswap { display: flex; justify-content: center; gap: 4px; flex: 0 0 auto; }
+.stagectl {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  flex: 0 0 auto;
+}
+.stagectl__sep { width: 1px; height: 20px; background: var(--line); }
+.stageswap { display: flex; justify-content: center; gap: 4px; }
 .stageswap__btn {
   padding: 5px 12px; font-size: 12px;
   border: 1px solid var(--line); background: var(--bg); color: var(--ink-secondary);
@@ -539,7 +562,11 @@ body.is-locked {
   .grid { gap: 10px; }
   .card { margin-bottom: 10px; }
   .likebtn { opacity: 1; width: 32px; height: 32px; }
-  .is-focus .likebtn--stage, .likebtn--stage { width: 44px; height: 44px; }
+  /* the same shape as the Video/Still tags it stands next to */
+  .is-focus .likebtn--stage, .likebtn--stage {
+    width: auto; height: auto; padding: 6px 12px;
+  }
+  .stagectl { gap: 14px; }
 
   /* head of the open group: its name, and the way into the feedback
      sheet — directly under the tabs, where the eye lands after choosing */
@@ -594,7 +621,13 @@ body.is-locked {
      the frame is a tall social post or a wide web screen, and the pager
      never moves between frames — but the copy below it is reached by
      scrolling the screen, not a panel inside it. */
-  .is-focus .detail { display: block; }
+  /* nothing sits below the frame in the walk, so the overlay is a column
+     the height of the screen: the frame takes what is left, and Prev and
+     Next sit at the foot exactly where they do on the group screens */
+  .is-focus .detail {
+    display: flex; flex-direction: column;
+    height: 100vh; height: 100dvh; overflow: hidden;
+  }
   .detail {
     display: block;
     overflow-y: auto; -webkit-overflow-scrolling: touch;
@@ -603,8 +636,12 @@ body.is-locked {
   .detail__stage {
     height: 68vh;
     justify-content: flex-start;
-    gap: 10px;
+    gap: 14px;
     padding: calc(56px + env(safe-area-inset-top)) 16px 10px;
+  }
+  .is-focus .detail__stage {
+    flex: 1; min-height: 0; height: auto;
+    padding: 8px 16px 14px;
   }
   .detail__media { flex: 1; min-height: 0; align-items: center; width: 100%; }
   .detail__frame { max-height: 100%; }
@@ -618,6 +655,11 @@ body.is-locked {
   .detail__pager {
     flex: 0 0 auto;
     width: 100%; justify-content: space-between; gap: 8px;
+  }
+  .is-focus .detail__pager {
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: var(--bg);
   }
   .detail__pager .quiet { min-width: 92px; text-align: center; padding: 10px 8px; }
   .detail__counter { flex: 0 0 auto; }
@@ -633,8 +675,8 @@ body.is-locked {
   /* these have to out-rank the .is-focus rules above, or the two controls
      end up on different offsets and different sizes */
   .is-focus .detail__bar, .detail__bar {
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    position: sticky; top: 0; z-index: 6; height: auto;
+    display: flex; align-items: center; justify-content: flex-end;
+    position: sticky; top: 0; z-index: 6; height: auto; flex: 0 0 auto;
     padding: calc(10px + env(safe-area-inset-top)) 12px 10px;
   }
   .is-focus .detail__close--pinned, .detail__close--pinned {

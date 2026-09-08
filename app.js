@@ -368,7 +368,7 @@
       <div class="card" role="button" tabindex="0" data-action="open:${item.id}" data-id="${item.id}">
         ${media(item)}
         <span class="card__dot" data-dotslot="${item.id}">${STORE.get("feedback", item.id) ? '<i class="dot dot--blue"></i>' : ""}</span>
-        ${likeHTML(item.id)}
+        ${likeHTML(ideaKeyOf(item))}
       </div>`;
       col.h += item.h / item.w;
     }
@@ -528,25 +528,27 @@
       .map((k) => STORE.get("idea", k))
       .find((v) => v) || "";
     const toggle = twin ? `
-          <div class="stageswap">
-            <button class="stageswap__btn ${shown.video ? "is-on" : ""}" data-action="stage:motion">Video</button>
-            <button class="stageswap__btn ${shown.video ? "" : "is-on"}" data-action="stage:still">Still</button>
-          </div>` : "";
+            <span class="stageswap">
+              <button class="stageswap__btn ${shown.video ? "is-on" : ""}" data-action="stage:motion">Video</button>
+              <button class="stageswap__btn ${shown.video ? "" : "is-on"}" data-action="stage:still">Still</button>
+            </span>` : "";
     return `
       <div class="detail__scrim" data-overlay></div>
       <div class="detail" data-overlay>
         <div class="detail__bar">
-          ${likeHTML(item.id, "likebtn--stage")}
           <button class="detail__close detail__close--pinned" data-action="close" aria-label="Close">✕</button>
         </div>
         <div class="detail__stage">
           <div class="detail__media"><span class="detail__frame">${media(shown, "ph--stage", true)}</span></div>
-          ${toggle}
-          <div class="detail__pager">
-            <button class="quiet" data-action="prev" ${rows.length < 2 ? "disabled" : ""}>← Prev</button>
-            <span class="detail__counter">${idx + 1} / ${rows.length}</span>
-            <button class="quiet" data-action="next" ${rows.length < 2 ? "disabled" : ""}>Next →</button>
+          <div class="stagectl">
+            ${toggle}${toggle ? `<span class="stagectl__sep"></span>` : ""}
+            ${likeHTML(ideaKeyOf(item), "likebtn--stage")}
           </div>
+        </div>
+        <div class="detail__pager">
+          <button class="quiet" data-action="prev" ${rows.length < 2 ? "disabled" : ""}>← Prev</button>
+          <span class="detail__counter">${idx + 1} / ${rows.length}</span>
+          <button class="quiet" data-action="next" ${rows.length < 2 ? "disabled" : ""}>Next →</button>
         </div>
         ${viewMode === "focus" ? "" : `
         <aside class="detail__panel">
@@ -819,9 +821,41 @@
     });
   }
 
+  /* Opening a frame is not a new page, but Back is what everyone reaches
+     for to leave it — and on a phone that used to walk out of the site.
+     Each overlay pushes a history entry, so Back closes it and nothing
+     else. Closing by other means winds the entry back off again. */
+  let overlayStates = 0;
+  let ignorePops = 0;
+  function pushOverlayState(kind) {
+    overlayStates++;
+    try { history.pushState({ draperOverlay: kind, n: overlayStates }, ""); } catch {}
+  }
+  /* leaving a group while something is open: unwind whatever it pushed */
+  function clearOverlays() {
+    if (openId || fbOpen || panelOpen) dropOverlayState();
+    openId = null; fbOpen = false; panelOpen = false;
+  }
+  function dropOverlayState() {
+    if (overlayStates < 1) return;
+    overlayStates--;
+    ignorePops++;
+    try { history.back(); } catch { ignorePops--; }
+  }
+  window.addEventListener("popstate", () => {
+    if (ignorePops > 0) { ignorePops--; return; }
+    if (overlayStates < 1) return;
+    overlayStates--;
+    /* topmost first: the frame sits over everything, the popup under it */
+    if (openId) { closeDetail({ history: false }); return; }
+    if (fbOpen) { fbOpen = false; unmountOverlay(".fbpop"); return; }
+    if (panelOpen) { panelOpen = false; render(); return; }
+  });
+
   /* Shared-element open: the frame flies from its grid slot to centre. */
   function openDetail(id, fromCard) {
     const from = fromCard && fromCard.querySelector(".ph, .ph-img")?.getBoundingClientRect();
+    if (!openId) pushOverlayState("frame");
     openId = id;
     stageAlt = false;
     render();
@@ -847,7 +881,9 @@
   }
 
   /* Close: the reverse of opening — the frame flies back to its grid slot. */
-  function closeDetail() {
+  function closeDetail({ history: syncHistory = true } = {}) {
+    if (!openId) return;
+    if (syncHistory) dropOverlayState();
     const media = root.querySelector(".detail__media img, .detail__media video, .detail__media .ph");
     const id = openId;
     openId = null;
@@ -961,7 +997,7 @@
       const w = walk[Number(jump.value)];
       if (w) {
         selection = { type: "group", laneId: w.lane.id, groupId: w.group.id };
-        openId = null; panelOpen = false; fbOpen = false; render(); toTopOfGroup();
+        clearOverlays(); render(); toTopOfGroup();
       }
       return;
     }
@@ -983,7 +1019,7 @@
   root.addEventListener("click", (e) => {
     /* the dark ground closes the popup; the card itself never does */
     if (e.target.classList && e.target.classList.contains("fbpop")) {
-      fbOpen = false; unmountOverlay(".fbpop"); return;
+      fbOpen = false; dropOverlayState(); unmountOverlay(".fbpop"); return;
     }
     const el = e.target.closest("[data-action]");
     if (el) {
@@ -1006,7 +1042,7 @@
         const i = walkIndex() + Number(a);
         if (i < 0 || i >= walk.length) return;
         selection = { type: "group", laneId: walk[i].lane.id, groupId: walk[i].group.id };
-        openId = null; panelOpen = false; fbOpen = false;
+        clearOverlays();
         render(); toTopOfGroup();
         return;
       }
@@ -1023,12 +1059,12 @@
         const n = Number(a);
         if (walk[n]) {
           selection = { type: "group", laneId: walk[n].lane.id, groupId: walk[n].group.id };
-          openId = null; fbOpen = false;
+          clearOverlays();
         }
         render(); toTopOfGroup(); return;
       }
-      if (verb === "fb-open")  { fbOpen = true;  mountOverlay(fbPopHTML()); return; }
-      if (verb === "fb-close") { fbOpen = false; unmountOverlay(".fbpop"); return; }
+      if (verb === "fb-open")  { fbOpen = true; pushOverlayState("feedback"); mountOverlay(fbPopHTML()); return; }
+      if (verb === "fb-close") { fbOpen = false; dropOverlayState(); unmountOverlay(".fbpop"); return; }
       if (verb === "panel-toggle") { panelOpen = !panelOpen; render(); return; }
       if (verb === "panel-close")  { panelOpen = false; render(); return; }
       if (verb === "select-all")   { selection = { type: "all" }; viewMode = "board"; openId = null; if (isMobile()) panelOpen = false; rerenderGrid(); }
@@ -1097,7 +1133,7 @@
   });
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && fbOpen) { fbOpen = false; unmountOverlay(".fbpop"); return; }
+    if (e.key === "Escape" && fbOpen) { fbOpen = false; dropOverlayState(); unmountOverlay(".fbpop"); return; }
     if (!openId) {
       if (viewMode !== "focus" || showSummary) return;
       if (document.activeElement && /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName)) return;

@@ -161,10 +161,20 @@ const STORE = (() => {
       let n = 0;
       for (const lane of project.lanes) for (const g of lane.groups) {
         const note = fb[`group:${lane.id}/${g.id}`];
-        const hearts = g.items.filter((it) => likes[it.id] === "1").map((it) => it.title);
+        /* a frame and its motion twin are one frame: they share a like, and
+           the still's name is the one it goes by */
+        const seen = new Set();
+        const hearts = [];
+        for (const it of g.items) {
+          const key = it.still || it.id;
+          if (likes[key] !== "1" || seen.has(key)) continue;
+          seen.add(key);
+          const named = g.items.find((x) => x.id === key) || it;
+          hearts.push(named.title.replace(/\s*·\s*Motion$/, ""));
+        }
         if (!note && !hearts.length) continue;
         L.push("", `## ${lane.name} — ${g.name}`, "");
-        if (hearts.length) L.push(`Liked: ${hearts.join(", ")}`, "");
+        if (hearts.length) L.push(`Liked (${hearts.length}): ${hearts.join(", ")}`, "");
         if (note) L.push(note.trim());
         n++;
       }

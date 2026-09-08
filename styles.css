@@ -31,6 +31,10 @@ body {
 }
 button, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; background: none; border: none; padding: 0; }
+/* Two quick taps on Next is a double tap, and a phone reads that as zoom.
+   This turns off double-tap zoom on the controls only — pinch to zoom a
+   frame is untouched, here and everywhere else. */
+button, select, .card { touch-action: manipulation; }
 
 .label {
   font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;

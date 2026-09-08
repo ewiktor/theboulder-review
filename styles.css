@@ -228,7 +228,7 @@ button, select, .card { touch-action: manipulation; }
 /* the like: quiet until it is on, and only in the way when you reach for it */
 .card { position: relative; }
 .likebtn {
-  position: absolute; left: 8px; top: 8px; z-index: 2;
+  position: absolute; right: 8px; top: 8px; z-index: 2;
   display: flex; align-items: center; justify-content: center;
   width: 32px; height: 32px;
   color: var(--ink); opacity: 0;

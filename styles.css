@@ -630,9 +630,13 @@ body.is-locked {
   /* nothing sits below the frame in the walk, so the overlay is a column
      the height of the screen: the frame takes what is left, and Prev and
      Next sit at the foot exactly where they do on the group screens */
+  /* the overlay is already pinned to every edge — a viewport unit on top
+     of that is a second, staler answer to the same question, and iOS
+     hands back the short one while the page is scroll-locked, which left
+     a band of empty page under the pager */
   .is-focus .detail {
     display: flex; flex-direction: column;
-    height: 100vh; height: 100dvh; overflow: hidden;
+    height: auto; overflow: hidden;
   }
   .detail {
     display: block;

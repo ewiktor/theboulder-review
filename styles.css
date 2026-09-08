@@ -479,7 +479,12 @@ body.is-locked {
 
   /* --- content --- */
   .main { padding: 8px 12px calc(40px + env(safe-area-inset-bottom)); overflow: visible; }
-  .main.focus { grid-template-columns: 1fr; overflow: visible; height: auto; }
+  /* rows hug their content: stretched rows put slack under the reading
+     block, which read as extra space above the rule */
+  .main.focus {
+    grid-template-columns: 1fr; overflow: visible; height: auto;
+    align-content: start;
+  }
   .focus__side {
     padding: 18px 16px 22px; overflow: visible;
     border-right: none; border-bottom: 1px solid var(--line);
@@ -491,7 +496,6 @@ body.is-locked {
   /* the walk moves by the title picker and the pager, so the old lane and
      group tabs are a second, competing way to the same places */
   .is-focus .tabs { display: none; }
-  .is-focus .focus__side { padding-top: 26px; }
   .focus__title { font-size: 22px; }
   .focus__idea, .focus .field--idea { font-size: 16px; }
   /* the pager rides the foot of the screen so the way onward is always
@@ -553,9 +557,11 @@ body.is-locked {
     background: var(--ink); color: #fff; font-size: 15px;
   }
   .is-focus .focus__frames { padding-bottom: calc(74px + env(safe-area-inset-bottom)); }
-  /* the column's own edge already closes the reading block, so the rule
-     under the idea would be the same line drawn twice */
-  .is-focus .focus__side { padding-bottom: 4px; }
+  /* the same 16px above the title and below the box, so the reading block
+     sits evenly between the bar and the rule under it */
+  .is-focus .focus__side { padding: 16px 16px; }
+  .is-focus .focus__titlerow { margin-top: 0; }
+  .is-focus .fbrow { margin: 0; }
   .is-focus .focus__idea, .is-focus .focus .field--idea {
     border-bottom: none; padding-bottom: 14px;
   }
